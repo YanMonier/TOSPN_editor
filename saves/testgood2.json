@@ -1,0 +1,203 @@
+{
+    "general_info": {
+        "place_id_num": 8,
+        "transition_id_num": 5,
+        "arc_id_num": 14,
+        "event_id_num": 2,
+        "output_id_num": 1
+    },
+    "transition": {
+        "0": {
+            "name": "T.0",
+            "time1": 0,
+            "time2": 0,
+            "event_id": 0,
+            "pos_x": -214.0,
+            "pos_y": -105.0,
+            "orientation": 0,
+            "id": 0
+        },
+        "1": {
+            "name": "T.1",
+            "time1": 0,
+            "time2": 0,
+            "event_id": 0,
+            "pos_x": -59.0,
+            "pos_y": 27.0,
+            "orientation": 0,
+            "id": 1
+        },
+        "2": {
+            "name": "T.2",
+            "time1": 0,
+            "time2": 0,
+            "event_id": 0,
+            "pos_x": 126.0,
+            "pos_y": -73.0,
+            "orientation": 0,
+            "id": 2
+        },
+        "3": {
+            "name": "T.3",
+            "time1": 0,
+            "time2": 0,
+            "event_id": 0,
+            "pos_x": 246.0,
+            "pos_y": -3.0,
+            "orientation": 0,
+            "id": 3
+        },
+        "4": {
+            "name": "T.4",
+            "time1": 0,
+            "time2": 0,
+            "event_id": 0,
+            "pos_x": 94.0,
+            "pos_y": 185.0,
+            "orientation": 0,
+            "id": 4
+        }
+    },
+    "place": {
+        "0": {
+            "name": "P.0",
+            "token": 0,
+            "pos_x": -325.0,
+            "pos_y": -93.0,
+            "id": 0
+        },
+        "1": {
+            "name": "toto",
+            "token": 0,
+            "pos_x": 85.0,
+            "pos_y": 7.0,
+            "id": 1
+        },
+        "2": {
+            "name": "P.2",
+            "token": 0,
+            "pos_x": -207.0,
+            "pos_y": 80.0,
+            "id": 2
+        },
+        "3": {
+            "name": "P.3",
+            "token": 0,
+            "pos_x": -122.0,
+            "pos_y": -65.0,
+            "id": 3
+        },
+        "4": {
+            "name": "P.57",
+            "token": 0,
+            "pos_x": 41.0,
+            "pos_y": -64.0,
+            "id": 4
+        },
+        "5": {
+            "name": "P.5",
+            "token": 0,
+            "pos_x": -30.0,
+            "pos_y": -70.0,
+            "id": 5
+        },
+        "6": {
+            "name": "P.6",
+            "token": 0,
+            "pos_x": 190.0,
+            "pos_y": 153.0,
+            "id": 6
+        },
+        "7": {
+            "name": "P.7",
+            "token": 0,
+            "pos_x": 393.0,
+            "pos_y": 34.0,
+            "id": 7
+        }
+    },
+    "arc": {
+        "6": {
+            "elem1_type": "place",
+            "elem1_id": 3,
+            "elem2_type": "transition",
+            "elem2_id": 0,
+            "weight": 1,
+            "id": 6
+        },
+        "7": {
+            "elem1_type": "transition",
+            "elem1_id": 0,
+            "elem2_type": "place",
+            "elem2_id": 0,
+            "weight": 1,
+            "id": 7
+        },
+        "8": {
+            "elem1_type": "transition",
+            "elem1_id": 0,
+            "elem2_type": "place",
+            "elem2_id": 2,
+            "weight": 1,
+            "id": 8
+        },
+        "9": {
+            "elem1_type": "place",
+            "elem1_id": 2,
+            "elem2_type": "transition",
+            "elem2_id": 1,
+            "weight": 1,
+            "id": 9
+        },
+        "10": {
+            "elem1_type": "transition",
+            "elem1_id": 1,
+            "elem2_type": "place",
+            "elem2_id": 4,
+            "weight": 1,
+            "id": 10
+        },
+        "11": {
+            "elem1_type": "place",
+            "elem1_id": 4,
+            "elem2_type": "transition",
+            "elem2_id": 2,
+            "weight": 1,
+            "id": 11
+        },
+        "12": {
+            "elem1_type": "transition",
+            "elem1_id": 4,
+            "elem2_type": "place",
+            "elem2_id": 6,
+            "weight": 1,
+            "id": 12
+        },
+        "13": {
+            "elem1_type": "place",
+            "elem1_id": 6,
+            "elem2_type": "transition",
+            "elem2_id": 3,
+            "weight": 1,
+            "id": 13
+        }
+    },
+    "output": {
+        "0": {
+            "name": "ve",
+            "math_expression": "(P.1==2 and P.4==6)",
+            "txt_expression": "(P.1==2 AND P.4==6)",
+            "id": 0
+        }
+    },
+    "event": {
+        "0": {
+            "name": "\u03bb",
+            "id": 0
+        },
+        "1": {
+            "name": "test",
+            "id": 1
+        }
+    }
+}
