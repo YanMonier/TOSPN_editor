@@ -9,7 +9,7 @@ from PySide2.QtCore import Qt
 
 
 class DraggableItem(QGraphicsItem):
-    def __init__(self,parent=None):
+    def __init__(self,x,y,parent=None):
         super().__init__(parent)
         self.dragging=False
         #self.setFlag(QGraphicsItem.ItemIsMovable)  # Allow moving the item
@@ -18,6 +18,7 @@ class DraggableItem(QGraphicsItem):
         self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)  # Cache the item for better performance
         self.setAcceptHoverEvents(True)
         self.boundingRectValue= QRectF(0,0,0,0)
+        self.setPos(x,y)
 
     def boundingRect(self):
         return self.boundingRectValue
@@ -25,7 +26,7 @@ class DraggableItem(QGraphicsItem):
 
     def mousePressEvent(self, event):
         # Optional: Handle press events (e.g., change color or do something on press)
-        if event.button() == Qt.LeftButton and self.scene().state=="move":
+        if event.button() == Qt.LeftButton and (self.scene().state=="move" or self.scene().state=="add_transition" or self.scene().state=="add_place" or self.scene().state=="add_event"):
             self.setFlag(QGraphicsItem.ItemIsMovable)
             self.setFlag(QGraphicsItem.ItemIsSelectable)
             self.setFlag(QGraphicsItem.ItemIsFocusable)
@@ -41,11 +42,11 @@ class DraggableItem(QGraphicsItem):
 
 
 class DraggableTextItem(DraggableItem):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, text, parent=None):
+        super().__init__(0,0,parent)
 
         self.setPos(15,20)
-        self.text="Line 1: This is the first line\nLine 2: This is the second line\nLine 3: This is the third line"
+        self.text=text
         self.font = QFont("Arial", 10)
         self.text_color = Qt.black
 
@@ -57,6 +58,8 @@ class DraggableTextItem(DraggableItem):
         self.setFlag(QGraphicsItem.ItemIsFocusable, False)
         self.setAcceptHoverEvents(False)
         self.parent=parent
+        self.updateText(self.text)
+
 
 
     def boundingRect(self):

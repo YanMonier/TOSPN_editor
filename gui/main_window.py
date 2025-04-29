@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QAction, QMessageBox, QToolBar, QGraphicsView, QGraphicsScene, QGraphicsRectItem,QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow
+from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QAction, QMessageBox, QToolBar, QGraphicsView, QGraphicsScene, QGraphicsRectItem,QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow, QSplitter, QHBoxLayout, QActionGroup
 from PySide2.QtCore import QRectF, Qt, QPointF, QPoint
 from PySide2.QtGui import QIcon
 from PySide2.QtGui import QBrush, QColor, QPen
@@ -6,12 +6,15 @@ import sys
 from gui.widgets.widgets import DraggableItem,DraggablePoint, LineBetweenPoints
 from gui.dialogs import MessageDialog, CustomDialog
 
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QFileDialog, QInputDialog,QSplitter, QHBoxLayout
+from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QFileDialog, QInputDialog
 from PySide2.QtCore import Qt
 
 from gui.graphics.graphics_scene import GraphConstructionScene
-from gui.widgets.property_editor import PlacePropertyEditor, TransitionPropertyEditor, EventPropertyEditor, OutputPropertyEditor
 
+from gui.widgets.property_editor.PlacePropertyEditor import PlacePropertyEditor
+from gui.widgets.property_editor.TransitionPropertyEditor import TransitionPropertyEditor
+from gui.widgets.property_editor.EventPropertyEditor import EventPropertyEditor
+from gui.widgets.property_editor.OutputPropertyEditor import OutputPropertyEditor
 
 
 
@@ -75,121 +78,272 @@ class GraphicsView(QGraphicsView):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.state="none"
+        self.state = "none"
+        self.current_scene_type = "edit"  # Track which scene is active
 
         # Set up the main window
-        self.setWindowTitle("PySide2 Application")
-        self.setGeometry(100, 100, 800, 600)  # x, y, width, height
+        self.setWindowTitle("TOSPN Editor")
+        self.setGeometry(100, 100, 800, 600)
 
         # Create a central widget
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
 
-        # Set a basic layout for the central widget
-        self.layoutV = QVBoxLayout()
-        self.layoutH1 = QHBoxLayout()
+        # Create scenes
+        self.edit_scene = GraphConstructionScene(self)
+        self.edit_scene.state = "none"
+        self.edit_scene.setSceneRect(-10000, -10000, 20000, 20000)
 
-        self.H1=QWidget()
-        self.H1.setLayout(self.layoutH1)
+        self.simulation_scene = QGraphicsScene(self)  # Empty scene for now
+        self.simulation_scene.setSceneRect(-10000, -10000, 20000, 20000)
 
-        self.central_widget.setLayout(self.layoutV)
-        self.layoutV.addWidget(self.H1)
-
-
-        # Create a QGraphicsView and QGraphicsScene
-        self.scene = GraphConstructionScene(self)
-        self.scene.state="none"
-        self.scene.setSceneRect(-10000, -10000, 20000, 20000)  # Set scene boundaries
-
+        self.simulation_graphics_view = GraphicsView(self.simulation_scene, self)
+        self.simulation_graphics_view.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.simulation_graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.simulation_graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # Create a QGraphicsView
-        self.graphics_view = GraphicsView(self.scene, self)
-
-        # Align the scene's (0, 0) to the top-left of the view
+        self.graphics_view = GraphicsView(self.edit_scene, self)  # Start with edit scene
         self.graphics_view.setAlignment(Qt.AlignTop | Qt.AlignLeft)
-
-        # Optional: Disable scrollbars
         self.graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        # Add the QGraphicsView to the layout
-        self.layoutH1.addWidget(self.graphics_view)
+        # Create the property editor
+        self.splitter = QSplitter(Qt.Horizontal)
+        self.current_property_editor = None
+        self.place_property_editor = PlacePropertyEditor()
+        self.transition_property_editor = TransitionPropertyEditor()
+        self.event_property_editor = EventPropertyEditor()
+        self.output_property_editor = OutputPropertyEditor()
 
+        # Connect property editors to TOSPN model
+        self.event_property_editor.set_TOSPN(self.edit_scene.TOSPN)
+        self.output_property_editor.set_TOSPN(self.edit_scene.TOSPN)
 
-        # Add a label as a placeholder
-        #label = QLabel("Welcome to PySide2 Application!", self)
-        #label.setStyleSheet("font-size: 18px;")
-        #self.layoutV.addWidget(label)
+        # Create simulation mode widgets
+        self.simulation_left_panel = QWidget()
+        self.simulation_left_panel.setMinimumWidth(200)  # Set minimum width
+        self.simulation_left_panel.setMaximumWidth(300)  # Set maximum width
+        self.simulation_left_panel.setStyleSheet("background-color: lightgray;")  # Temporary visible style
+        left_layout = QVBoxLayout()
+        left_layout.addWidget(QLabel("Simulation Controls"))
+        self.simulation_left_panel.setLayout(left_layout)
 
+        self.simulation_bottom_panel = QWidget()
+        self.simulation_bottom_panel.setMinimumHeight(100)  # Set minimum height
+        self.simulation_bottom_panel.setMaximumHeight(150)  # Set maximum height
+        self.simulation_bottom_panel.setStyleSheet("background-color: lightblue;")  # Temporary visible style
+        bottom_layout = QHBoxLayout()
+        bottom_layout.addWidget(QLabel("Simulation Status"))
+        self.simulation_bottom_panel.setLayout(bottom_layout)
 
-        # Create two draggable points
-        #point1 = DraggablePoint(100, 100)
-        #point2 = DraggablePoint(400, 300)
+        # Create persistent layouts
+        # Edit mode layout
+        self.edit_layout = QHBoxLayout()
+        self.edit_layout.addWidget(self.graphics_view)
+        self.edit_layout.addWidget(self.splitter)
 
-        # Create a line between the two points
-        #line = LineBetweenPoints(point1, point2)
+        # Simulation mode layout
+        self.simulation_layout = QVBoxLayout()
+        
+        # Create horizontal layout for top section
+        top_layout = QHBoxLayout()
+        top_layout.addWidget(self.simulation_left_panel, 1)  # 1 part for left panel
+        top_layout.addWidget(self.simulation_graphics_view, 4)  # 4 parts for graphics view
+        
+        # Create a widget to hold the top layout
+        top_widget = QWidget()
+        top_widget.setLayout(top_layout)
+        
+        # Add widgets to main simulation layout with stretch
+        self.simulation_layout.addWidget(top_widget, 5)  # Top section takes 5 parts
+        self.simulation_layout.addWidget(self.simulation_bottom_panel, 2)  # Bottom panel takes 2 parts
 
-        # Add the points and the line to the scene
-        #self.scene.addItem(point1)
-        #self.scene.addItem(point2)
-        #self.scene.addItem(line)
+        # Create container widget for simulation layout
+        self.simulation_widget = QWidget()
+        self.simulation_widget.setLayout(self.simulation_layout)
 
+        # Create container widget for edit layout
+        self.edit_widget = QWidget()
+        self.edit_widget.setLayout(self.edit_layout)
 
-        # Optional: Set up a status bar
+        # Create main layout for central widget
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addWidget(self.edit_widget)  # Start with edit widget
+        self.central_widget.setLayout(self.main_layout)
+
+        # Set up menus and toolbars
         self.statusBar().showMessage("Ready")
         self.setup_menus()
         self.setup_toolbar()
 
-        # Create the property editor
+    def setup_edit_layout(self):
+        """Switch to edit mode layout."""
+        self.simulation_widget.hide()
+        self.edit_widget.show()
+        self.main_layout.removeWidget(self.simulation_widget)
+        self.main_layout.addWidget(self.edit_widget)
 
+    def setup_simulation_layout(self):
+        """Switch to simulation mode layout."""
+        self.edit_widget.hide()
+        self.simulation_widget.show()
+        self.main_layout.removeWidget(self.edit_widget)
+        self.main_layout.addWidget(self.simulation_widget)
 
-        self.splitter = QSplitter(Qt.Horizontal)
-        self.current_property_editor=None
-        self.place_property_editor = PlacePropertyEditor()
-        self.transition_property_editor=TransitionPropertyEditor(self.scene.TOSPN)
+    def switch_to_edit_scene(self):
+        """Switch to the edit scene."""
+        if self.current_scene_type != "edit":
+            self.current_scene_type = "edit"
+            self.toolbar.show()
+            self.move_action.setEnabled(True)
+            self.add_place_action.setEnabled(True)
+            self.add_transition_action.setEnabled(True)
+            self.add_arc_action.setEnabled(True)
+            self.add_event_action.setEnabled(True)
+            self.add_output_action.setEnabled(True)
+            self.setup_edit_layout()
+            self.statusBar().showMessage("Edit Mode")
 
-        self.event_property_editor=EventPropertyEditor(self.scene.TOSPN)
-        self.output_property_editor=OutputPropertyEditor(self.scene.TOSPN)
+    def switch_to_simulation_scene(self):
+        """Switch to the simulation scene."""
+        if self.current_scene_type != "simulation":
+            self.current_scene_type = "simulation"
+            self.toolbar.hide()
+            self.move_action.setEnabled(False)
+            self.add_place_action.setEnabled(False)
+            self.add_transition_action.setEnabled(False)
+            self.add_arc_action.setEnabled(False)
+            self.add_event_action.setEnabled(False)
+            self.add_output_action.setEnabled(False)
+            self.setup_simulation_layout()
+            self.statusBar().showMessage("Simulation Mode")
 
+    def setup_toolbar(self):
+        # Create a toolbar
+        self.toolbar = QToolBar("Main Toolbar", self)
+        self.addToolBar(self.toolbar)
 
-        #self.splitter.addWidget(self.place_property_editor)
-        self.layoutH1.addWidget(self.splitter)
+        # Create editing actions
+        self.move_action = QAction(QIcon(), "move", self)
+        self.move_action.setShortcut("Ctrl+m")
+        self.move_action.setCheckable(True)
+        self.move_action.triggered.connect(self.update_state)
 
+        self.add_place_action = QAction(QIcon(), "add place", self)
+        self.add_place_action.setShortcut("Ctrl+p")
+        self.add_place_action.setCheckable(True)
+        self.add_place_action.triggered.connect(self.update_state)
 
+        self.add_transition_action = QAction(QIcon(), "add transition", self)
+        self.add_transition_action.setShortcut("Ctrl+t")
+        self.add_transition_action.setCheckable(True)
+        self.add_transition_action.triggered.connect(self.update_state)
 
+        self.add_arc_action = QAction(QIcon(), "add arc", self)
+        self.add_arc_action.setShortcut("Ctrl+a")
+        self.add_arc_action.setCheckable(True)
+        self.add_arc_action.triggered.connect(self.update_state)
 
+        self.add_event_action = QAction(QIcon(), "add event", self)
+        self.add_event_action.setShortcut("Ctrl+e")
+        self.add_event_action.setCheckable(True)
+        self.add_event_action.triggered.connect(self.update_state)
 
+        self.add_output_action = QAction(QIcon(), "add output", self)
+        self.add_output_action.setShortcut("Ctrl+o")
+        self.add_output_action.setCheckable(True)
+        self.add_output_action.triggered.connect(self.update_state)
 
-        ################TEST
-        """
-        # Initialize dialogs
-        self.message_dialog = MessageDialog(self)
-        self.custom_dialog = CustomDialog()
+        # Add editing actions to toolbar
+        self.toolbar.addAction(self.move_action)
+        self.toolbar.addAction(self.add_place_action)
+        self.toolbar.addAction(self.add_transition_action)
+        self.toolbar.addAction(self.add_arc_action)
+        self.toolbar.addAction(self.add_event_action)
+        self.toolbar.addAction(self.add_output_action)
 
-        # Button to show message box
-        self.button = QPushButton("Show Info Dialog", self)
-        self.button.clicked.connect(self.message_dialog.show_message_dialog)
-        self.button.setGeometry(100, 50, 200, 50)
-        self.layoutV.addWidget(self.button)
+        # Customize the toolbar
+        self.toolbar.setMovable(True)
+        self.toolbar.setFloatable(True)
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
-        # Button to open file dialog
-        self.button_open_file = QPushButton("Open File", self)
-        self.button_open_file.clicked.connect(self.message_dialog.open_file_dialog)
-        self.button_open_file.setGeometry(100, 150, 200, 50)
-        self.layoutV.addWidget(self.button_open_file)
+        self.toggle_action_list = [
+            self.add_arc_action,
+            self.add_transition_action,
+            self.add_place_action,
+            self.move_action,
+            self.add_event_action,
+            self.add_output_action
+        ]
 
-        # Button to show input dialog
-        self.button_input = QPushButton("Enter Your Name", self)
-        self.button_input.clicked.connect(self.message_dialog.show_input_dialog)
-        self.button_input.setGeometry(100, 250, 200, 50)
-        self.layoutV.addWidget(self.button_input)
+    def update_state(self, checked):
+        """Update the label based on the toggle button's state."""
+        sender=self.sender()
+        #print(sender)
+        if checked:
+            if self.edit_scene.state=="add_event":
+                index = self.splitter.indexOf(self.event_property_editor)
+                self.splitter.replaceWidget(index, None)
+                self.event_property_editor.setParent(None)
 
-        # Button to show custom dialog
-        self.button_custom_dialog = QPushButton("Custom Dialog", self)
-        self.button_custom_dialog.clicked.connect(self.custom_dialog.exec_)
-        self.button_custom_dialog.setGeometry(100, 350, 200, 50)
-        self.layoutV.addWidget(self.button_custom_dialog)
-        """
+            for action in self.toggle_action_list:
+                if action != sender:
+                    action.setChecked(0)
+            if sender == self.move_action:
+                self.edit_scene.state="move"
+                self.edit_scene.empty_selected()
+                self.set_property_editor(None)
+            elif sender == self.add_place_action:
+                self.edit_scene.state="add_place"
+                self.edit_scene.empty_selected()
+                self.set_property_editor(None)
+            elif sender == self.add_transition_action:
+                self.edit_scene.state="add_transition"
+                self.edit_scene.empty_selected()
+                self.set_property_editor(None)
+            elif sender == self.add_arc_action:
+                self.edit_scene.state="add_arc"
+                self.edit_scene.empty_selected()
+                self.set_property_editor(None)
+            elif sender == self.add_event_action:
+                self.edit_scene.state = "add_event"
+                self.edit_scene.empty_selected()
+                self.set_property_editor("event")
+
+            elif sender == self.add_output_action:
+                self.edit_scene.state = "add_output"
+                self.edit_scene.empty_selected()
+                self.set_property_editor("output")
+        else:
+            self.edit_scene.state="None"
+
+    def set_property_editor(self, value):
+        # First remove the current editor if it exists
+        if self.current_property_editor is not None:
+            #self.splitter.widget(self.splitter.indexOf(self.current_property_editor)).hide()
+            self.current_property_editor.setParent(None)
+            self.current_property_editor = None
+
+        # Then add the new editor based on value
+        if value == "transition":
+            self.splitter.addWidget(self.transition_property_editor)
+            self.current_property_editor = self.transition_property_editor
+        elif value == "place":
+            self.splitter.addWidget(self.place_property_editor)
+            self.current_property_editor = self.place_property_editor
+        elif value == "event":
+            self.splitter.addWidget(self.event_property_editor)
+            self.current_property_editor = self.event_property_editor
+        elif value == "output":
+            self.splitter.addWidget(self.output_property_editor)
+            self.current_property_editor = self.output_property_editor
+            #self.output_property_editor.update_txt()
+
+        # Show the new editor if one was added
+        if self.current_property_editor is not None:
+            self.current_property_editor.show()
+
     def resizeEvent(self, event):
         # Adjust the scene rectangle to match the size of the QGraphicsView
         view_width = self.graphics_view.width()
@@ -223,23 +377,32 @@ class MainWindow(QMainWindow):
         file_menu.addAction(new_action)
         file_menu.addAction(open_action)
         file_menu.addAction(save_action)
-        file_menu.addSeparator()  # Add a separator
+        file_menu.addSeparator()
         file_menu.addAction(exit_action)
 
-        '''
-        # Edit Menu
-        edit_menu = menubar.addMenu("Edit")
+        # Mode Menu
+        mode_menu = menubar.addMenu("Mode")
 
-        # Create actions for the Edit menu
-        cut_action = QAction("Cut", self)
-        copy_action = QAction("Copy", self)
-        paste_action = QAction("Paste", self)
+        # Create mode switching actions
+        self.edit_mode_action = QAction("Edit Mode", self)
+        self.edit_mode_action.setCheckable(True)
+        self.edit_mode_action.setChecked(True)  # Start in edit mode
+        self.edit_mode_action.triggered.connect(self.switch_to_edit_scene)
 
-        # Add actions to the Edit menu
-        edit_menu.addAction(cut_action)
-        edit_menu.addAction(copy_action)
-        edit_menu.addAction(paste_action)
-        '''
+        self.simulation_mode_action = QAction("Simulation Mode", self)
+        self.simulation_mode_action.setCheckable(True)
+        self.simulation_mode_action.triggered.connect(self.switch_to_simulation_scene)
+
+        # Create action group for mode switching
+        mode_group = QActionGroup(self)
+        mode_group.addAction(self.edit_mode_action)
+        mode_group.addAction(self.simulation_mode_action)
+        mode_group.setExclusive(True)
+
+        # Add mode switching actions to Mode menu
+        mode_menu.addAction(self.edit_mode_action)
+        mode_menu.addAction(self.simulation_mode_action)
+
         # Help Menu
         help_menu = menubar.addMenu("Help")
 
@@ -252,7 +415,7 @@ class MainWindow(QMainWindow):
 
     # Action Handlers
     def new_file(self):
-        self.scene.graphManager.empty_self()
+        self.edit_scene.graphManager.empty_self()
         QMessageBox.information(self, "New File", "Create a new file!")
 
     def open_file(self):
@@ -264,9 +427,9 @@ class MainWindow(QMainWindow):
             "JSON Files (*.json);;All Files (*)"  # File type filters
         )
         if file_path:  # Check if the user selected a file
-            self.scene.graphManager.load(file_path)
+            self.edit_scene.graphManager.load(file_path)
             print(f"File loaded from: {file_path}")
-            QMessageBox.information(self, "Save File", "Save the current file!")
+            QMessageBox.information(self, "Load File", "The file has been successfully loaded !")
 
 
     def save_file(self):
@@ -278,137 +441,10 @@ class MainWindow(QMainWindow):
             "JSON Files (*.json);;All Files (*)"  # File type filters
         )
         if file_path:  # Check if the user selected a file
-            self.scene.graphManager.save(file_path)
+            self.edit_scene.graphManager.save(file_path)
             print(f"File saved to: {file_path}")
             QMessageBox.information(self, "Save File", "Save the current file!")
 
     def show_about(self):
         QMessageBox.about(self, "About", "This editor was developed with funding from the ANR project MENACE.")
-
-    # Placeholder for creating a toolbar
-    def setup_toolbar(self):
-        # Create a toolbar
-        toolbar = QToolBar("Main Toolbar", self)
-        self.addToolBar(toolbar)  # Add the toolbar to the main window
-
-        # Create actions for the toolbar
-        self.move_action = QAction(QIcon(), "move", self)  # Replace QIcon() with a valid icon file
-        self.move_action.setShortcut("Ctrl+m")
-        self.move_action.setCheckable(True)
-        self.move_action.triggered.connect(self.update_state)
-
-        self.add_place_action = QAction(QIcon(), "add place", self)  # Replace QIcon() with a valid icon file
-        self.add_place_action.setShortcut("Ctrl+p")
-        self.add_place_action.setCheckable(True)
-        self.add_place_action.triggered.connect(self.update_state)
-
-        self.add_transition_action = QAction(QIcon(), "add transition", self)  # Replace QIcon() with a valid icon file
-        self.add_transition_action.setShortcut("Ctrl+t")
-        self.add_transition_action.setCheckable(True)
-        self.add_transition_action.triggered.connect(self.update_state)
-
-        self.add_arc_action = QAction(QIcon(), "add arc", self)
-        self.add_arc_action.setShortcut("Ctrl+a")
-        self.add_arc_action.setCheckable(True)
-        self.add_arc_action.triggered.connect(self.update_state)
-
-        self.add_event_action = QAction(QIcon(), "add event", self)
-        self.add_event_action.setShortcut("Ctrl+e")
-        self.add_event_action.setCheckable(True)
-        self.add_event_action.triggered.connect(self.update_state)
-
-        self.add_output_action = QAction(QIcon(), "add output", self)
-        self.add_output_action.setShortcut("Ctrl+o")
-        self.add_output_action.setCheckable(True)
-        self.add_output_action.triggered.connect(self.update_state)
-
-        # Add actions to the toolbar
-        toolbar.addAction(self.move_action)
-        toolbar.addAction(self.add_place_action)
-        toolbar.addAction(self.add_transition_action)
-
-        #toolbar.addSeparator()  # Add a separator
-        toolbar.addAction(self.add_arc_action)
-        toolbar.addAction(self.add_event_action)
-        toolbar.addAction(self.add_output_action)
-
-
-
-        # Customize the toolbar
-        toolbar.setMovable(True)  # Allow the toolbar to be moved
-        toolbar.setFloatable(True)  # Allow the toolbar to float
-        toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)  # Show text under icons
-        self.toggle_action_list=[self.add_arc_action,self.add_transition_action,self.add_place_action,self.move_action,self.add_event_action,self.add_output_action]
-
-
-    def toggle_action(self, checked):
-        if checked:
-            print("Action is ON")
-        else:
-            print("Action is OFF")
-
-    def update_state(self, checked):
-        """Update the label based on the toggle button's state."""
-        sender=self.sender()
-        #print(sender)
-        if checked:
-            if self.scene.state=="add_event":
-                index = self.splitter.indexOf(self.event_property_editor)
-                self.splitter.replaceWidget(index, None)
-                self.event_property_editor.setParent(None)
-
-            for action in self.toggle_action_list:
-                if action != sender:
-                    action.setChecked(0)
-            if sender == self.move_action:
-                self.scene.state="move"
-                self.scene.empty_selected()
-                self.set_property_editor(None)
-            elif sender == self.add_place_action:
-                self.scene.state="add_place"
-                self.scene.empty_selected()
-                self.set_property_editor(None)
-            elif sender == self.add_transition_action:
-                self.scene.state="add_transition"
-                self.scene.empty_selected()
-                self.set_property_editor(None)
-            elif sender == self.add_arc_action:
-                self.scene.state="add_arc"
-                self.scene.empty_selected()
-                self.set_property_editor(None)
-            elif sender == self.add_event_action:
-                self.scene.state = "add_event"
-                self.scene.empty_selected()
-                self.set_property_editor("event")
-
-            elif sender == self.add_output_action:
-                self.scene.state = "add_output"
-                self.scene.empty_selected()
-                self.set_property_editor("output")
-        else:
-            self.scene.state="None"
-
-    def set_property_editor(self,value):
-
-        if self.current_property_editor != None:
-            index = self.splitter.indexOf(self.current_property_editor)
-            self.splitter.replaceWidget(index, None)
-            self.current_property_editor.setParent(None)
-
-
-        if value=="transition":
-            self.splitter.addWidget(self.transition_property_editor)
-            self.current_property_editor=self.transition_property_editor
-        elif value=="place":
-            self.splitter.addWidget(self.place_property_editor)
-            self.current_property_editor = self.place_property_editor
-        elif value=="event":
-            self.splitter.addWidget(self.event_property_editor)
-            self.current_property_editor = self.event_property_editor
-        elif value=="output":
-            self.splitter.addWidget(self.output_property_editor)
-            self.current_property_editor = self.output_property_editor
-            self.output_property_editor.update_txt()
-        else:
-            self.current_property_editor = None
 

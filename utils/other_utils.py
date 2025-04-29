@@ -5,13 +5,15 @@ from pyparsing import Forward, Word, alphas, alphanums, nums, Literal, Group, Op
 class OutputParser():
     def __init__(self,TOSPN):
         self.TOSPN=TOSPN
+        print(f"Debug: Initializing OutputParser with TOSPN places: {self.TOSPN.place_names.keys()}")
         self.update_parsing_element()
 
     def update_parsing_element(self):
-        self.name_list=self.TOSPN.placeNameDic.keys()
+        print("Debug: Updating parsing elements")
+        self.name_list=self.TOSPN.place_names.keys()
+        print(f"Debug: Available place names: {self.name_list}")
         self.lparen = Literal("(").suppress()
         self.rparen = Literal(")").suppress()
-
 
         self.operator_list=["AND", "OR"]
         self.operator = oneOf(self.operator_list)
@@ -22,6 +24,7 @@ class OutputParser():
 
         self.func_ind = oneOf(["FM", "FD"])
         self.place_name = oneOf(self.name_list)  # Function name or variable
+        print(f"Debug: Place name parser set up with: {self.place_name}")
         self.marking = Group(self.place_name + self.symbol + self.integer)
 
         self.operand_with_function = Forward()
@@ -43,21 +46,27 @@ class OutputParser():
         self.expr_with_function <<= infixNotation(self.arg_with_function, [(self.operator, 2, opAssoc.LEFT)])
 
     def tryParsing(self, text_to_parse):
+        self.update_parsing_element()
         try:
+            print(f"Debug: Attempting to parse: {text_to_parse}")
             result = self.expr_with_function.parseString(text_to_parse)
+            print(f"Debug: Initial parse successful: {result}")
 
             text_to_parse_without_space=text_to_parse.replace(" ","")
-
             text_to_parse_without_space=text_to_parse_without_space.replace(")", "")
             text_to_parse_without_space = text_to_parse_without_space.replace("(", "")
+            print(f"Debug: Cleaned input: {text_to_parse_without_space}")
 
             reconstructed_text=self.reformat_txt(result.asList())
+            print(f"Debug: Reconstructed text: {reconstructed_text}")
 
             reconstructed_text_without_space=reconstructed_text.replace(" ","")
             reconstructed_text_without_space = reconstructed_text_without_space.replace("(", "")
             reconstructed_text_without_space = reconstructed_text_without_space.replace(")", "")
+            print(f"Debug: Cleaned reconstructed: {reconstructed_text_without_space}")
 
             if reconstructed_text_without_space==text_to_parse_without_space:
+                print("Debug: Validation successful")
                 return (True, result)
             else:
                 print(text_to_parse_without_space)
@@ -110,7 +119,7 @@ class OutputParser():
         if isinstance(parsed, str):
             if parsed in self.name_list:
                 name = parsed
-                id = self.TOSPN.placeNameDic[name].id
+                id = self.TOSPN.place_names[name].id
                 return "P.{}".format(id)
             else:
                 return parsed
@@ -151,7 +160,7 @@ class OutputParser():
         if isinstance(parsed, str):
             if parsed  in self.name_list:
                 name=parsed
-                id=self.TOSPN.placeNameDic[name].id
+                id=self.TOSPN.place_names[name].id
                 return "P.{}".format(id)
             else:
                 return parsed
@@ -227,7 +236,11 @@ class OutputParser():
         return True
 
     def check_validity(self,text_to_parse):
+        """Check if the expression is valid."""
+        print(f"Debug: Checking validity of expression: {text_to_parse}")
         result = self.tryParsing(text_to_parse)
+
+        print(f"Debug: Parsing result: {result[0]}")
         if result[0] == True:
             print("chek1")
             text_to_parse_compare=text_to_parse.replace(" ","")
