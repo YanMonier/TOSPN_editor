@@ -319,7 +319,7 @@ class Fired_transition():
 		#generate all possible combinations of tokens that can be used to explain the firing of the transition.
 		self.token_used_possibilities=self.generate_combinations(self.token_possible_per_places_set, self.token_number_per_places)
 		self.token_used_possibilities_per_token={}
-		for place_id in self.token_possible_per_places_set.keys()
+		for place_id in self.token_possible_per_places_set.keys():
 			for token_id in self.token_possible_per_places_set[place_id].keys():
 				self.token_used_possibilities_per_token[token_id]=[]
 		for combination in self.token_used_possibilities:

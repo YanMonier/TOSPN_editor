@@ -1,0 +1,29 @@
+{
+    "general_info": {
+        "place_id_num": 0,
+        "transition_id_num": 0,
+        "arc_id_num": 0,
+        "event_id_num": 1,
+        "output_id_num": 1,
+        "model_type": "TLSPN"
+    },
+    "places": [],
+    "transitions": [],
+    "arcs": [],
+    "events": [
+        {
+            "id": 0,
+            "name": "\u03bb",
+            "transition_ids": []
+        }
+    ],
+    "outputs": [
+        {
+            "id": 0,
+            "name": ".",
+            "transition_ids": []
+        }
+    ],
+    "marking": {},
+    "file_type": "TLSPN_model"
+}

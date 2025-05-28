@@ -2,6 +2,7 @@ import os
 import json
 
 
+
 def read_file(file_path):
     """Reads the content of a file and returns it."""
     try:

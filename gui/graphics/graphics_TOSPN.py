@@ -1,5 +1,5 @@
-from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem, QGraphicsTextItem,QGraphicsLineItem
-from PySide2.QtGui import QBrush, QColor, QPen,  QPainterPath, QTransform, QPolygonF, QPainterPathStroker
+from PySide2.QtWidgets import QGraphicsItem, QGraphicsLineItem
+from PySide2.QtGui import QBrush, QColor, QPen,  QPainterPath, QPolygonF
 from PySide2.QtCore import Qt, QRectF, QPointF
 
 from gui.widgets.widgets import DraggableItem, DraggableTextItem
@@ -7,12 +7,7 @@ from gui.widgets.widgets import DraggableItem, DraggableTextItem
 import math
 import json
 
-from core.model.tospn import TOSPN
-from core.model.place import Place
-from core.model.transition import Transition
-from core.model.arc import Arc
-from core.model.event import Event
-from core.model.output import Output
+from core.model.TOSPN.tospn import TOSPN
 
 #from tools.TOSPN import TOSPN, Output, Place, Event, Transition, Arc        Old code
 

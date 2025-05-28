@@ -1,4 +1,7 @@
-from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QAction, QMessageBox, QToolBar, QGraphicsView, QGraphicsScene, QGraphicsRectItem,QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow, QSplitter, QHBoxLayout, QActionGroup
+import json
+
+
+from PySide2.QtWidgets import QTabWidget, QApplication, QLabel, QVBoxLayout, QWidget, QAction, QMessageBox, QToolBar, QGraphicsView, QGraphicsScene, QGraphicsRectItem,QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow, QSplitter, QHBoxLayout, QActionGroup, QDialogButtonBox
 from PySide2.QtCore import QRectF, Qt, QPointF, QPoint
 from PySide2.QtGui import QIcon
 from PySide2.QtGui import QBrush, QColor, QPen
@@ -15,8 +18,82 @@ from gui.widgets.property_editor.PlacePropertyEditor import PlacePropertyEditor
 from gui.widgets.property_editor.TransitionPropertyEditor import TransitionPropertyEditor
 from gui.widgets.property_editor.EventPropertyEditor import EventPropertyEditor
 from gui.widgets.property_editor.OutputPropertyEditor import OutputPropertyEditor
+from gui.widgets.property_editor.OutputPropertyEditorTLSPN import OutputPropertyEditorTLSPN
+
+from gui.tabs.edit_TLSPN_tab import edit_model_tab
+from core.model.SCG.scg import SCG
+
+class NewFileDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Create New File")
+        layout = QVBoxLayout(self)
+
+        layout.addWidget(QLabel("Choose what to create:"))
+
+        # Create buttons for different file types
+        self.buttons = {
+            "TOSPN": QPushButton("New TOSPN"),
+            "TLSPN": QPushButton("New TLSPN"),
+        }
+
+        for btn in self.buttons.values():
+            layout.addWidget(btn)
+
+        # Add Cancel button
+        cancel_box = QDialogButtonBox(QDialogButtonBox.Cancel)
+        cancel_box.rejected.connect(self.reject)
+        layout.addWidget(cancel_box)
+
+        # Variable to store choice
+        self.choice = None
+
+        # Connect each button to select and accept
+        for name, btn in self.buttons.items():
+            btn.clicked.connect(lambda *_ , n=name: self.select_option(n))
+
+    def select_option(self, name):
+        self.choice = name
+        self.accept()  # Close the dialog and return success
 
 
+class MyTabs(QTabWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setTabsClosable(True)
+        self.setMovable(True)
+        self.tabCloseRequested.connect(self.close_tab)
+
+    def add_new_tab(self, name):
+        tab = QWidget()
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel(f"This is {name}"))
+        tab.setLayout(layout)
+        self.addTab(tab, name)
+
+    def close_tab(self, index):
+        # Ask if user wants to save
+        response = QMessageBox.question(
+            self,
+            "Save changes?",
+            "Do you want to save changes before closing this tab?",
+            QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel
+        )
+
+        if response == QMessageBox.Yes:
+            print("Saving...")  # Your save logic here
+            if self.currentWidget().tab_type=="TLSPN_edit_tab":
+                result = self.currentWidget().save_file()
+            if result == "saved":
+                self.removeTab(index)
+            else:
+                pass
+        elif response == QMessageBox.No:
+            self.removeTab(index)
+        else:
+            # Cancelled — do nothing
+            pass
 
 class GraphicsView(QGraphicsView):
     def __init__(self, scene, parent):
@@ -78,6 +155,9 @@ class GraphicsView(QGraphicsView):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.tabs=QTabWidget()
+
         self.state = "none"
         self.current_scene_type = "edit"  # Track which scene is active
 
@@ -86,8 +166,17 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 800, 600)
 
         # Create a central widget
-        self.central_widget = QWidget(self)
+        self.central_widget = MyTabs()
         self.setCentralWidget(self.central_widget)
+        self.tabs=[]
+        #self.page1 = QWidget()
+        #self.page2 = QWidget()
+        #self.page3 = QWidget()
+        self.tabs.append(edit_model_tab())
+        #self.central_widget.addTab(self.page1, "Edit Mode")
+        #self.central_widget.addTab(self.page2, "Class graph Mode")
+        #self.central_widget.addTab(self.page3, "Simulation Mode")
+        self.central_widget.addTab( self.tabs[-1], "Edit test")
 
         # Create scenes
         self.edit_scene = GraphConstructionScene(self)
@@ -170,12 +259,12 @@ class MainWindow(QMainWindow):
         # Create main layout for central widget
         self.main_layout = QVBoxLayout()
         self.main_layout.addWidget(self.edit_widget)  # Start with edit widget
-        self.central_widget.setLayout(self.main_layout)
+        #self.page1.setLayout(self.main_layout)
 
         # Set up menus and toolbars
         self.statusBar().showMessage("Ready")
         self.setup_menus()
-        self.setup_toolbar()
+        #self.setup_toolbar()
 
     def setup_edit_layout(self):
         """Switch to edit mode layout."""
@@ -380,9 +469,8 @@ class MainWindow(QMainWindow):
         file_menu.addSeparator()
         file_menu.addAction(exit_action)
 
-        # Mode Menu
+        """# Mode Menu
         mode_menu = menubar.addMenu("Mode")
-
         # Create mode switching actions
         self.edit_mode_action = QAction("Edit Mode", self)
         self.edit_mode_action.setCheckable(True)
@@ -393,6 +481,8 @@ class MainWindow(QMainWindow):
         self.simulation_mode_action.setCheckable(True)
         self.simulation_mode_action.triggered.connect(self.switch_to_simulation_scene)
 
+
+
         # Create action group for mode switching
         mode_group = QActionGroup(self)
         mode_group.addAction(self.edit_mode_action)
@@ -401,8 +491,14 @@ class MainWindow(QMainWindow):
 
         # Add mode switching actions to Mode menu
         mode_menu.addAction(self.edit_mode_action)
-        mode_menu.addAction(self.simulation_mode_action)
+        mode_menu.addAction(self.simulation_mode_action)"""
 
+        # oppmenu
+        opp_menu = menubar.addMenu("Opperation")
+        # Create mode switching actions
+        construct_graph = QAction("Cosntruct Graph", self)
+        construct_graph.triggered.connect(self.construct_classgraph)
+        opp_menu.addAction(construct_graph)
         # Help Menu
         help_menu = menubar.addMenu("Help")
 
@@ -413,10 +509,31 @@ class MainWindow(QMainWindow):
         # Add the action to the Help menu
         help_menu.addAction(about_action)
 
+    def construct_classgraph(self):
+        current_tab = self.central_widget.currentWidget()
+        if current_tab.tab_type == "TLSPN_edit_tab":
+            TLSPN=current_tab.TLSPN
+            if TLSPN != None:
+                scg=SCG(TLSPN)
+                print(scg.edge_list,scg.state_hash_dic)
+                print("edge number",len(scg.edge_list))
+                print("state number",len(list(scg.state_hash_dic.keys())))
+                scg.plot_graph()
+
     # Action Handlers
     def new_file(self):
-        self.edit_scene.graphManager.empty_self()
-        QMessageBox.information(self, "New File", "Create a new file!")
+
+        dialog = NewFileDialog()
+        if dialog.exec_() == QDialog.Accepted:
+            file_type = dialog.choice
+
+            if dialog.choice == "TLSPN":
+                self.tabs.append(edit_model_tab())
+                self.central_widget.addTab(self.tabs[-1], "Edit TLSPN")
+                self.central_widget.setCurrentWidget(self.tabs[-1])
+
+        #self.edit_scene.graphManager.empty_self()
+        #QMessageBox.information(self, "New File", "Create a new file!")
 
     def open_file(self):
         # Open a file dialog to select save location
@@ -427,24 +544,30 @@ class MainWindow(QMainWindow):
             "JSON Files (*.json);;All Files (*)"  # File type filters
         )
         if file_path:  # Check if the user selected a file
-            self.edit_scene.graphManager.load(file_path)
-            print(f"File loaded from: {file_path}")
-            QMessageBox.information(self, "Load File", "The file has been successfully loaded !")
+            file_type=None
+            with open(file_path, 'r') as json_file:
+                save_dic = json.load(json_file)
+                file_type=save_dic["file_type"]
 
+                if file_type == "TLSPN_edit_tab":
+                    self.tabs.append(edit_model_tab())
+                    self.central_widget.addTab(self.tabs[-1], "Edit TLSPN")
+                    self.central_widget.setCurrentWidget(self.tabs[-1])
+                    self.tabs[-1].load(file_path)
+
+                    print(f"File loaded from: {file_path}")
+                    QMessageBox.information(self, "Load File", "The file has been successfully loaded !")
+
+            print("debug: try open")
 
     def save_file(self):
         # Open a file dialog to select save location
-        file_path, _ = QFileDialog.getSaveFileName(
-            self,
-            "Save File",  # Dialog title
-            "",  # Initial directory ("" for current directory)
-            "JSON Files (*.json);;All Files (*)"  # File type filters
-        )
-        if file_path:  # Check if the user selected a file
-            self.edit_scene.graphManager.save(file_path)
-            print(f"File saved to: {file_path}")
-            QMessageBox.information(self, "Save File", "Save the current file!")
+
+        current_tab = self.central_widget.currentWidget()
+        if current_tab.tab_type=="TLSPN_edit_tab":
+            current_tab.save_file()
 
     def show_about(self):
         QMessageBox.about(self, "About", "This editor was developed with funding from the ANR project MENACE.")
+
 

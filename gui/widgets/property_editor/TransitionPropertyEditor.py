@@ -69,6 +69,8 @@ class TransitionPropertyEditor(QWidget):
         
         self.timing_group.setLayout(self.timing_layout)
         self.transition_properties_layout.addWidget(self.timing_group)
+
+
         
         # Connect signals
         self.name_field.textChanged.connect(self.update_name)

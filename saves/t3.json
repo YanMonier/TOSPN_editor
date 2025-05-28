@@ -1,0 +1,117 @@
+{
+    "general_info": {
+        "place_id_num": 2,
+        "transition_id_num": 2,
+        "arc_id_num": 4,
+        "event_id_num": 1,
+        "output_id_num": 1,
+        "model_type": "TLSPN"
+    },
+    "places": [
+        {
+            "id": 0,
+            "name": "P.0",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -289.0,
+            "pos_y": -49.0
+        },
+        {
+            "id": 1,
+            "name": "P.1",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -73.0,
+            "pos_y": 27.0
+        }
+    ],
+    "transitions": [
+        {
+            "id": 0,
+            "name": "T.0",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 0,
+            "output_id": 0,
+            "pos_x": -155.0,
+            "pos_y": -110.0,
+            "orientation": 1
+        },
+        {
+            "id": 1,
+            "name": "T.1",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 0,
+            "output_id": 0,
+            "pos_x": -194.0,
+            "pos_y": 77.0,
+            "orientation": 1
+        }
+    ],
+    "arcs": [
+        {
+            "id": 0,
+            "source_id": 0,
+            "source_type": "transition",
+            "target_id": 1,
+            "target_type": "place",
+            "weight": 1
+        },
+        {
+            "id": 1,
+            "source_id": 1,
+            "source_type": "place",
+            "target_id": 1,
+            "target_type": "transition",
+            "weight": 1
+        },
+        {
+            "id": 2,
+            "source_id": 1,
+            "source_type": "transition",
+            "target_id": 0,
+            "target_type": "place",
+            "weight": 1
+        },
+        {
+            "id": 3,
+            "source_id": 0,
+            "source_type": "place",
+            "target_id": 0,
+            "target_type": "transition",
+            "weight": 1
+        }
+    ],
+    "events": [
+        {
+            "id": 0,
+            "name": "\u03bb",
+            "transition_ids": [
+                1,
+                0
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "id": 0,
+            "name": ".",
+            "transition_ids": [
+                1,
+                0
+            ]
+        }
+    ],
+    "marking": {
+        "0": 0,
+        "1": 0
+    },
+    "file_type": "TLSPN_model"
+}

@@ -12,6 +12,7 @@ from .output import Output
 class TOSPN:
     def __init__(self):
         """Initialize a new TOSPN model."""
+        self.model_type="TOSPN"
         # Model elements
         self.places = {}        # Dictionary of places {id: place}
         self.transitions = {}   # Dictionary of transitions {id: transition}
@@ -257,7 +258,8 @@ class TOSPN:
                 "transition_id_num":self.transition_id,
                 "arc_id_num":self.arc_id,
                 "event_id_num":self.event_id,
-                "output_id_num":self.output_id
+                "output_id_num":self.output_id,
+                "model_type": self.model_type
             },
             "places": [place.to_dict() for place in self.places.values()],
             "transitions": [trans.to_dict() for trans in self.transitions.values()],
