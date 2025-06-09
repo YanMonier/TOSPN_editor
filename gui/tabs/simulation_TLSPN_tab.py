@@ -13,9 +13,10 @@ from gui.widgets.property_editor.PlacePropertyEditorTLSPN  import PlacePropertyE
 from gui.widgets.property_editor.TransitionPropertyEditorTLSPN import TransitionPropertyEditorTLSPN
 from gui.widgets.property_editor.EventPropertyEditorTLSPN  import EventPropertyEditorTLSPN
 from gui.widgets.property_editor.OutputPropertyEditorTLSPN  import OutputPropertyEditorTLSPN
-from gui.widgets.property_editor.SimulationPropertyEditorTLSPN  import SimulationPropertyEditorTLSPN
 
 from core.model.TLSPN.tlspn import TLSPN
+
+
 
 class GraphicsView(QGraphicsView):
     def __init__(self, scene, parent):
@@ -98,7 +99,6 @@ class edit_model_tab(QWidget):
 		self.transition_property_editor = TransitionPropertyEditorTLSPN ()
 		self.event_property_editor = EventPropertyEditorTLSPN ()
 		self.output_property_editor = OutputPropertyEditorTLSPN ()
-		self.simulation_property_editor = SimulationPropertyEditorTLSPN()
 
 
 		self.layout = QVBoxLayout()
@@ -147,11 +147,6 @@ class edit_model_tab(QWidget):
 		self.add_output_action.setCheckable(True)
 		self.add_output_action.triggered.connect(self.update_state)
 
-		self.simulation_action = QAction(QIcon(), "simulation", self)
-		self.simulation_action.setShortcut("Ctrl+w")
-		self.simulation_action.setCheckable(True)
-		self.simulation_action.triggered.connect(self.update_state)
-
 		# Add editing actions to toolbar
 		self.toolbar.addAction(self.move_action)
 		self.toolbar.addAction(self.add_place_action)
@@ -159,7 +154,6 @@ class edit_model_tab(QWidget):
 		self.toolbar.addAction(self.add_arc_action)
 		self.toolbar.addAction(self.add_event_action)
 		self.toolbar.addAction(self.add_output_action)
-		self.toolbar.addAction(self.simulation_action)
 
 		# Customize the toolbar
 		self.toolbar.setMovable(True)
@@ -172,8 +166,7 @@ class edit_model_tab(QWidget):
 			self.add_place_action,
 			self.move_action,
 			self.add_event_action,
-			self.add_output_action,
-			self.simulation_action
+			self.add_output_action
 		]
 
 		self.set_model(TLSPN())
@@ -216,15 +209,6 @@ class edit_model_tab(QWidget):
 				self.edit_scene.state = "add_output"
 				self.edit_scene.empty_selected()
 				self.set_property_editor("output")
-
-			elif sender == self.simulation_action:
-				self.edit_scene.state = "simulation"
-				self.edit_scene.empty_selected()
-				self.set_property_editor("simulation")
-
-			if self.edit_scene.state != "simulation":
-				for gtransition in self.edit_scene.graphManager.transition_to_graph_transition.values():
-					gtransition.unselected()
 		else:
 			self.edit_scene.state = "None"
 
@@ -248,10 +232,6 @@ class edit_model_tab(QWidget):
 		elif value == "output":
 			self.splitter.addWidget(self.output_property_editor)
 			self.current_property_editor = self.output_property_editor
-		elif value == "simulation":
-			self.splitter.addWidget(self.simulation_property_editor)
-			self.current_property_editor = self.simulation_property_editor
-			self.simulation_property_editor.reset_simulation()
 		# self.output_property_editor.update_txt()
 
 		# Show the new editor if one was added
@@ -262,7 +242,6 @@ class edit_model_tab(QWidget):
 		# Connect property editors to TOSPN model
 		self.event_property_editor.set_TLSPN(TLSPN)
 		self.output_property_editor.set_TLSPN(TLSPN)
-		self.simulation_property_editor.set_TLSPN(TLSPN)
 		self.TLSPN=TLSPN
 		self.edit_scene.set_model(TLSPN)
 

@@ -106,7 +106,7 @@ class SCG:
 
 	def plot_graph(self):
 
-		dot = Digraph(name='{}'.format("HA"), filename='{}.gv'.format("HA"), comment='HA graph', engine="neato")
+		dot = Digraph(name='{}'.format("HA"), filename='{}.gv'.format("HA"), comment='HA graph', engine="dot")
 
 		round_val = 3
 		# dot.graph_attr['layout'] = "neato"
@@ -317,6 +317,7 @@ class StateSCG:
 
 			for tj in activated_transition_list:
 				if self.get_lower_bound_alpha(tj)<=usigma:
+					print(f"DEBUG state: {self.id} trans:{tj}, lower bound: {self.get_lower_bound_alpha(tj)}, upper:{self.get_upper_bound_beta(tj)}")
 					if self.get_upper_bound_beta(tj) == self.get_lower_bound_alpha(tj) and self.get_upper_bound_beta(tj)==usigma:
 						sigma.append(tj)
 					else:

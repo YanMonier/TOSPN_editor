@@ -42,8 +42,11 @@ class Transition:
         
         # Simulation state
         self.is_enabled = False
-        self.reservation_time = None  # When tokens were reserved
-        self.reserved_inputs = {}  # Dictionary of {place_id: tokens_reserved}
+        self.activated_time=None
+        self.min_firing_time=None
+        self.max_firing_time=None
+
+        self.simulation_state="disabled"
         
         # Event listener pattern support
         self._listeners = []
@@ -139,69 +142,66 @@ class Transition:
         Does not consider reservations.
         """
         for arc in self.input_arcs:
-            if arc.source.get_available_tokens() < arc.weight:
+            if arc.source.token_number < arc.weight:
                 return False
         return True
-    
-    def reserve_input_tokens(self):
-        """
-        Try to reserve tokens from input places.
-        Returns True if successful, False otherwise.
-        """
-        if not self.check_enabled():
-            return False
-            
-        # First verify all tokens can be reserved
-        can_reserve = True
-        for arc in self.input_arcs:
-            if not arc.source.get_available_tokens() >= arc.weight:
-                can_reserve = False
-                break
-                
-        # If all tokens available, make reservations
-        if can_reserve:
+
+    def check_enabling_state(self,time):
+        if self.simulation_state=="disabled":
+            if self.check_enabled():
+                self.simulation_state="enabled"
+                self.is_enabled=True
+                self.TLSPN.notify_listeners("transition_enabled",[self.name,time])
+                self.notify_listeners("simulation_enabled")
+
+        elif self.simulation_state=="enabled":
+            if not self.check_enabled():
+                self.simulation_state = "disabled"
+                self.is_enabled = False
+                self.TLSPN.notify_listeners("transition_disabled", [self.name, time])
+                self.notify_listeners("simulation_not_enabled")
+        elif self.simulation_state=="has_fired":
+            if self.check_enabled():
+                self.simulation_state = "enabled"
+                self.is_enabled = True
+                self.TLSPN.notify_listeners("transition_enabled", [self.name, time])
+                self.notify_listeners("simulation_enabled")
+            else:
+                self.simulation_state = "disabled"
+                self.is_enabled = False
+                self.TLSPN.notify_listeners("transition_disabled", [self.name, time])
+                self.notify_listeners("simulation_not_enabled")
+
+
+    def activate(self,time):
+        if self.simulation_state == "enabled":
+            self.activated_time = time
+            self.min_firing_time = time + int(self.timing_interval[0] * 1000)
+            self.max_firing_time = time + int(self.timing_interval[1] * 1000)
             for arc in self.input_arcs:
-                success = arc.source.reserve_tokens(self.id, arc.weight)
-                if success:
-                    self.reserved_inputs[arc.source.id] = arc.weight
-                else:
-                    # If any reservation fails, release all previous reservations
-                    self.release_reservations()
-                    return False
-            return True
-        return False
-    
-    def release_reservations(self):
-        """Release all token reservations made by this transition."""
-        for place_id in list(self.reserved_inputs.keys()):
-            for arc in self.input_arcs:
-                if arc.source.id == place_id:
-                    arc.source.release_reservation(self.id)
-        self.reserved_inputs.clear()
-    
-    def fire(self):
-        """
-        Fire the transition, consuming reserved tokens and producing new ones.
-        Returns True if successful, False otherwise.
-        """
-        if not self.reserved_inputs:
-            return False
-            
-        # Consume reserved tokens from input places
-        for arc in self.input_arcs:
-            if not arc.source.remove_tokens(arc.weight):
-                return False
-                
-        # Produce tokens in output places
-        for arc in self.output_arcs:
-            arc.target.add_tokens(arc.weight)
-            
-        # Clear reservations
-        self.reserved_inputs.clear()
-        self.reservation_time = None
-        
-        self.notify_listeners("fired", None)
-        return True
+                arc.source.remove_tokens(arc.weight)
+            self.simulation_state = "activated"
+            self.TLSPN.notify_listeners("transition_activated", [self.name, time])
+            self.notify_listeners("simulation_activated_cant_fire")
+
+
+    def check_firing_state(self,time):
+        if self.simulation_state == "activated":
+            if time >= self.min_firing_time and time <= self.max_firing_time:
+                self.simulation_state = "firable"
+                self.TLSPN.notify_listeners("transition_firable", [self.name, time])
+                self.notify_listeners("simulation_activated_can_fire")
+
+    def fire(self,time):
+        if self.simulation_state == "firable" and time <= self.max_firing_time:
+            for arc in self.output_arcs:
+                arc.target.add_tokens(arc.weight)
+            self.TLSPN.notify_listeners("transition_fired", [self.name, time])
+            self.simulation_state="has_fired"
+        elif self.simulation_state == "firable":
+            raise Exception(f"timing error of firing for transition {self.name} at time {time} ")
+
+
     
     def to_dict(self):
         """Convert transition to dictionary for serialization."""

@@ -40,6 +40,28 @@ class DraggableItem(QGraphicsItem):
         #print("cant move")
         super().mouseReleaseEvent(event)
 
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionChange:
+            # Notify parent edge to update path on move
+            if self.scene().isGridOn == True:
+                #print(self.scene())
+                # value is the new position (QPointF)
+                GRID_SIZE = self.scene().grid_size
+                new_pos = value
+                # Snap to grid
+                x = round(new_pos.x() / GRID_SIZE) * GRID_SIZE
+                y = round(new_pos.y() / GRID_SIZE) * GRID_SIZE
+                return QPointF(x, y)
+            else:
+                new_pos = value
+                x = new_pos.x()
+                y = new_pos.y()
+                return QPointF(x, y)
+        elif change == QGraphicsItem.ItemPositionHasChanged:
+            self.update()
+
+        return super().itemChange(change, value)
+
 
 class DraggableTextItem(DraggableItem):
     def __init__(self, text, parent=None):

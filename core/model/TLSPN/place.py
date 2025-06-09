@@ -33,10 +33,10 @@ class Place:
                 raise ValueError(f"Place name '{name}' is invalid or already exists")
         
         self.name = name
-        
+
+        self.init_token_number = token_number
         self.token_number = token_number
-        self.reserved_tokens = {}  # Dictionary to track token reservations {transition_id: number_of_tokens}
-        
+
         # Arc connections
         self.input_arcs = []   # Arcs where this place is the target
         self.output_arcs = []  # Arcs where this place is the source
@@ -109,44 +109,34 @@ class Place:
             self.notify_listeners("token_changed", self.token_number)
             return True
         return False
-    
-    def reserve_tokens(self, transition_id, count):
-        """
-        Reserve tokens for a specific transition.
-        
-        Args:
-            transition_id: ID of the transition reserving tokens
-            count: Number of tokens to reserve
-            
-        Returns:
-            bool: True if reservation was successful, False otherwise
-        """
-        available_tokens = self.token_number - sum(self.reserved_tokens.values())
-        if available_tokens >= count:
-            self.reserved_tokens[transition_id] = count
-            self.notify_listeners("token_reserved", 
-                                {"transition": transition_id, "count": count})
+
+    def set_token_number(self,count):
+        self.token_number = count
+        self.notify_listeners("token_changed", self.token_number)
+
+    def add_init_tokens(self, count):
+        """Add tokens to the place."""
+        self.init_token_number += count
+        self.token_number = self.init_token_number
+        self.notify_listeners("token_changed", self.init_token_number)
+
+    def remove_init_tokens(self, count):
+        """Remove tokens from the place."""
+        if self.init_token_number >= count:
+            self.init_token_number -= count
+            self.token_number=self.init_token_number
+            self.notify_listeners("token_changed", self.init_token_number)
             return True
         return False
-    
-    def release_reservation(self, transition_id):
-        """Release tokens reserved for a specific transition."""
-        if transition_id in self.reserved_tokens:
-            del self.reserved_tokens[transition_id]
-            self.notify_listeners("reservation_released", transition_id)
-            return True
-        return False
-    
-    def get_available_tokens(self):
-        """Get the number of tokens available for reservation."""
-        return self.token_number - sum(self.reserved_tokens.values())
+
+
     
     def to_dict(self):
         """Convert place to dictionary for serialization."""
         return {
             "id": self.id,
             "name": self.name,
-            "token_number": self.token_number,
+            "token_number": self.init_token_number,
             "type": self.type
         }
     

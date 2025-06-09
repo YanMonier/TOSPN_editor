@@ -36,6 +36,9 @@ class GraphConstructionScene(QGraphicsScene):
 
 		self.mouse_clicked = False
 
+		self.grid_size=20
+		self.isGridOn=True
+
 	def empty_selected(self):
 		"""Clear all selections."""
 		if self.mono_selected_item is not None:
@@ -64,15 +67,19 @@ class GraphConstructionScene(QGraphicsScene):
 			# Handle selection changes
 			if self.top_mono_item != self.mono_selected_item or self.top_mono_item is None:
 				if self.mono_selected_item is not None:
-					self.empty_selected()
-					self.unselect_item()
+					if self.state != "simulation":
+						self.unselect_item()
+						self.empty_selected()
+
 
 			if self.top_mono_item is not None:
 				if self.top_mono_item != self.mono_selected_item:
 					self.mono_selected_item = self.top_mono_item
-					self.mono_selected_item.selected()
-					self.mono_selected_item.setFocus()
-					self.select_item(self.mono_selected_item)
+					if self.state != "simulation":
+						self.mono_selected_item.selected()
+						self.mono_selected_item.setFocus()
+						self.select_item(self.mono_selected_item)
+
 
 			# Handle state-specific actions
 			if self.state == "add_place":
@@ -92,6 +99,11 @@ class GraphConstructionScene(QGraphicsScene):
 						if isinstance(item, (GraphPlaceItemTLSPN, GraphTransitionItemTLSPN)):
 							self.selected_item_1 = item
 							break
+			elif self.state == "simulation":
+				if self.top_mono_item is not None:
+					if isinstance(self.top_mono_item, (GraphTransitionItemTLSPN)):
+						self.top_mono_item.simulation_clicked()
+
 
 		super().mousePressEvent(event)
 
@@ -142,22 +154,23 @@ class GraphConstructionScene(QGraphicsScene):
 					if new_arc is not None:
 						self.graphManager.add_arc(new_arc, self.selected_item_1, self.selected_item_2)
 
-		self.selected_item_1 = None
-		self.selected_item_2 = None
-		self.temp_arc.setVisible(False)
+			self.selected_item_1 = None
+			self.selected_item_2 = None
+			self.temp_arc.setVisible(False)
 
 		super().mouseReleaseEvent(event)
 
 	def mouseMoveEvent(self, event):
 		"""Handle mouse move events."""
 		# Handle mono selection
-		if self.state in ["move", "add_arc", "add_place", "add_transition"]:
+		if self.state in ["move", "add_arc", "add_place", "add_transition","simulation"]:
 			self.items_under_cursor = self.items(event.scenePos())
 			self.top_mono_item = None
 
 			# Find top-most selectable item
 			for item in self.items_under_cursor:
-				if isinstance(item, (GraphPlaceItemTLSPN, GraphTransitionItemTLSPN, GraphArcItemTLSPN, DraggableTextItem)):
+
+				if (isinstance(item, (GraphPlaceItemTLSPN, GraphTransitionItemTLSPN, GraphArcItemTLSPN, DraggableTextItem)) and self.state!="simulation") or (isinstance(item, (GraphTransitionItemTLSPN))):
 					if isinstance(item, DraggableTextItem):
 						self.top_mono_item = item.parent
 					else:

@@ -41,6 +41,8 @@ class TLSPN:
         # Create default lambda event
         self.add_event("λ")
         self.add_output(".")
+
+        self.simulation_time=0
         
     
     def add_listener(self, listener):
@@ -267,11 +269,11 @@ class TLSPN:
                 "output_id_num":self.output_id,
                 "model_type": self.model_type
             },
-            "places": [place.to_dict() for place in self.places.values()],
-            "transitions": [trans.to_dict() for trans in self.transitions.values()],
-            "arcs": [arc.to_dict() for arc in self.arcs.values()],
-            "events": [event.to_dict() for event in self.events.values()],
-            "outputs": [output.to_dict() for output in self.outputs.values()],
+            "places": {place.id:place.to_dict() for place in self.places.values()},
+            "transitions": {trans.id:trans.to_dict() for trans in self.transitions.values()},
+            "arcs": {arc.id:arc.to_dict() for arc in self.arcs.values()},
+            "events": {event.id:event.to_dict() for event in self.events.values()},
+            "outputs": {output.id:output.to_dict() for output in self.outputs.values()},
             "marking": self.marking_dic.copy()
         }
     
@@ -287,23 +289,23 @@ class TLSPN:
         tlspn.output_names.clear()
         
         # Load events first (needed for transitions)
-        for event_data in data["events"]:
+        for event_data_id, event_data in data["events"].items():
             tlspn.add_event(event_data["name"], event_data["id"])
 
-        for output_data in data["outputs"]:
+        for output_data_id,output_data in data["outputs"].items():
             tlspn.add_output(output_data["name"], output_data["id"])
         
         # Load places
-        for place_data in data["places"]:
+        for place_data_id,place_data in data["places"].items():
             tlspn.add_place(place_data["name"], place_data["token_number"], place_data["id"])
         
         
         # Load transitions
-        for trans_data in data["transitions"]:
+        for trans_data_i,trans_data in data["transitions"].items():
             tlspn.add_transition(trans_data["name"], tlspn.get_event_by_id(trans_data["event_id"]), tlspn.get_output_by_id(trans_data["output_id"]), trans_data["id"], trans_data["timing_interval"] )
         
         # Load arcs
-        for arc_data in data["arcs"]:
+        for arc_data_id,arc_data in data["arcs"].items():
             if arc_data["source_type"] == "place":
                 source = tlspn.get_place_by_id(arc_data["source_id"])
             else:
@@ -439,32 +441,92 @@ class TLSPN:
             raise ValueError(f"Event '{event_name}' not found")
         return event.trigger()
     
-    def fire_transition(self, transition):
-        """
-        Fire a transition if it has reserved tokens.
-        Returns True if successful, False otherwise.
-        """
-        if transition.fire():
-            # Update markings
-            for arc in transition.input_arcs:
-                self.update_marking(arc.source, arc.source.token_number)
-            for arc in transition.output_arcs:
-                self.update_marking(arc.target, arc.target.token_number)
-            
-            # Evaluate outputs after marking change
-            self.evaluate_outputs()
-            return True
-        return False
+
     
     def reset_simulation(self):
         """Reset the simulation state."""
         # Release all reservations
+        self.set_simulation_time(0)
+        for place in self.places.values():
+            place.set_token_number(place.init_token_number)
+
         for transition in self.transitions.values():
-            transition.release_reservations()
-            transition.reservation_time = None
-        
-        # Reset output values
-        for output in self.outputs.values():
-            output.last_value = None
-        
-        self.notify_listeners("simulation_reset", None) 
+            print("reste transition",transition.name)
+            transition.simulation_state="disabled"
+            transition.check_enabling_state(self.simulation_time)
+
+        #self.notify_listeners("simulation_reset", None)
+
+    def set_simulation_time(self,time):
+        self.simulation_time=time
+        self.notify_listeners("update_time", self.simulation_time)
+
+    def add_simulation_time(self,time):
+        self.simulation_time+=time
+        self.notify_listeners("update_time", self.simulation_time)
+
+
+    def simulation_step(self,next_step=True):
+
+        something_moved=False
+        for transition in self.transitions.values():
+            transition.check_firing_state(self.simulation_time)
+
+        for transition in self.transitions.values():
+            if transition.simulation_state=="firable":
+                if transition.max_firing_time==self.simulation_time:
+                    transition.fire(self.simulation_time)
+                    something_moved=True
+
+        for transition in self.transitions.values():
+            transition.check_enabling_state(self.simulation_time)
+
+        for transition in self.transitions.values():
+            if transition.simulation_state=="enabled":
+                if transition.event.name=="λ":
+                    something_moved = True
+                    self.activate_event("λ")
+
+
+
+        if something_moved:
+            self.simulation_step(next_step)
+        else:
+            if next_step:
+                self.add_simulation_time(1)
+                self.simulation_step(False)
+
+
+    def fire_transition(self,transition):
+        if transition.simulation_state == "firable":
+            transition.fire(self.simulation_time)
+            for transition in self.transitions.values():
+                transition.check_enabling_state(self.simulation_time)
+
+    def activate_event(self,event_name):
+        trans_list=[]
+        for transition in self.transitions.values():
+            if transition.event.name == event_name:
+                if transition.simulation_state=="enabled":
+                    trans_list.append(transition)
+        while trans_list!=[]:
+            prioritary_transition=min(trans_list, key=lambda x: x.priority_level)
+            prioritary_transition.activate(self.simulation_time)
+            for transition in self.transitions.values():
+                transition.check_enabling_state(self.simulation_time)
+            trans_list = []
+            for transition in self.transitions.values():
+                if transition.event.name == event_name:
+                    if transition.simulation_state == "enabled":
+                        trans_list.append(transition)
+
+    def simulate_over_time(self,new_time):
+        for k in range(new_time):
+            self.simulation_step()
+
+
+
+
+
+
+

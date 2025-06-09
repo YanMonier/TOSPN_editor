@@ -1,0 +1,53 @@
+{
+    "general_info": {
+        "place_id_num": 2,
+        "transition_id_num": 0,
+        "arc_id_num": 0,
+        "event_id_num": 1,
+        "output_id_num": 1,
+        "model_type": "TLSPN",
+        "view_pos": [
+            -1296.0,
+            -299.0
+        ]
+    },
+    "places": {
+        "0": {
+            "id": 0,
+            "name": "P.0",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -1560.0,
+            "pos_y": -420.0
+        },
+        "1": {
+            "id": 1,
+            "name": "P.1",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -1260.0,
+            "pos_y": -320.0
+        }
+    },
+    "transitions": {},
+    "arcs": {},
+    "events": {
+        "0": {
+            "id": 0,
+            "name": "\u03bb",
+            "transition_ids": []
+        }
+    },
+    "outputs": {
+        "0": {
+            "id": 0,
+            "name": ".",
+            "transition_ids": []
+        }
+    },
+    "marking": {
+        "0": 0,
+        "1": 0
+    },
+    "file_type": "TLSPN_edit_tab"
+}

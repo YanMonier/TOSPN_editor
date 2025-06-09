@@ -1,0 +1,110 @@
+{
+    "general_info": {
+        "place_id_num": 2,
+        "transition_id_num": 1,
+        "arc_id_num": 2,
+        "event_id_num": 1,
+        "output_id_num": 1,
+        "model_type": "TLSPN",
+        "view_pos": [
+            -1296.0,
+            -299.0
+        ]
+    },
+    "places": {
+        "0": {
+            "id": 0,
+            "name": "P.0",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -1540.0,
+            "pos_y": -400.0
+        },
+        "1": {
+            "id": 1,
+            "name": "P.1",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -1249.0,
+            "pos_y": -335.0
+        }
+    },
+    "transitions": {
+        "0": {
+            "id": 0,
+            "name": "T.0",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 0,
+            "output_id": 0,
+            "priority_level": 0,
+            "pos_x": -1400.0,
+            "pos_y": -440.0,
+            "orientation": 0
+        }
+    },
+    "arcs": {
+        "0": {
+            "id": 0,
+            "source_id": 0,
+            "source_type": "place",
+            "target_id": 0,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": [
+                [
+                    -1540.0,
+                    -480.0
+                ],
+                [
+                    -1440.0,
+                    -520.0
+                ]
+            ]
+        },
+        "1": {
+            "id": 1,
+            "source_id": 0,
+            "source_type": "transition",
+            "target_id": 1,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -1300.0,
+                    -500.0
+                ],
+                [
+                    -1140.0,
+                    -460.0
+                ]
+            ]
+        }
+    },
+    "events": {
+        "0": {
+            "id": 0,
+            "name": "\u03bb",
+            "transition_ids": [
+                0
+            ]
+        }
+    },
+    "outputs": {
+        "0": {
+            "id": 0,
+            "name": ".",
+            "transition_ids": [
+                0
+            ]
+        }
+    },
+    "marking": {
+        "0": 0,
+        "1": 0
+    },
+    "file_type": "TLSPN_edit_tab"
+}

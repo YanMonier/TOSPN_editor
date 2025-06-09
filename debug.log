@@ -1,3 +1,0 @@
-2025-05-28 18:02:29,455 - DEBUG - write lines to 'classgraph_plot'
-2025-05-28 18:02:29,456 - DEBUG - run [WindowsPath('dot'), '-Kneato', '-Tpdf', '-O', 'classgraph_plot']
-2025-05-28 18:02:29,520 - DEBUG - view: 'classgraph_plot.pdf'

@@ -84,9 +84,9 @@ class PlacePropertyEditor(QWidget):
         """Update the number of tokens."""
         if self.current_place and new_value != self.current_place.token_number:
             if new_value > self.current_place.token_number:
-                self.current_place.add_tokens(new_value - self.current_place.token_number)
+                self.current_place.add_init_tokens(new_value - self.current_place.token_number)
             else:
-                self.current_place.remove_tokens(self.current_place.token_number - new_value)
+                self.current_place.remove_init_tokens(self.current_place.token_number - new_value)
     
     def validate_name(self, name):
         """Validate a place name."""
