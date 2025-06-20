@@ -496,7 +496,7 @@ class MainWindow(QMainWindow):
         # oppmenu
         opp_menu = menubar.addMenu("Opperation")
         # Create mode switching actions
-        construct_graph = QAction("Cosntruct Graph", self)
+        construct_graph = QAction("Construct Graph", self)
         construct_graph.triggered.connect(self.construct_classgraph)
         opp_menu.addAction(construct_graph)
         # Help Menu

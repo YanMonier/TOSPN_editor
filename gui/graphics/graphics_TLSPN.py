@@ -859,7 +859,7 @@ class GraphArcItemTLSPN(QGraphicsPathItem):
 		"""Handle changes in the arc model."""
 		if event_type == "weight_changed":
 			self.weight_text.updateText(str(data))
-			self.weight_text.setDefaultTextColor(self.color)
+			#self.weight_text.setDefaultTextColor(self.color)
 			self.updateLine()  # Update to reposition weight text
 
 	def set_color(self, r, g, b):

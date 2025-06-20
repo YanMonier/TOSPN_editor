@@ -4,6 +4,8 @@ from PySide2.QtCore import QRectF, Qt, QPointF, QPoint
 from PySide2.QtGui import QIcon
 from PySide2.QtGui import QBrush, QColor, QPen
 import sys
+
+from gui.widgets.property_editor.ArcPropertyEditorTLSPN import ArcPropertyEditorTLSPN
 from gui.widgets.widgets import DraggableItem,DraggablePoint, LineBetweenPoints
 from gui.dialogs import MessageDialog, CustomDialog
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QFileDialog, QInputDialog
@@ -14,6 +16,8 @@ from gui.widgets.property_editor.TransitionPropertyEditorTLSPN import Transition
 from gui.widgets.property_editor.EventPropertyEditorTLSPN  import EventPropertyEditorTLSPN
 from gui.widgets.property_editor.OutputPropertyEditorTLSPN  import OutputPropertyEditorTLSPN
 from gui.widgets.property_editor.SimulationPropertyEditorTLSPN  import SimulationPropertyEditorTLSPN
+
+from gui.widgets.property_editor.ArcPropertyEditorTLSPN  import ArcPropertyEditorTLSPN
 
 from core.model.TLSPN.tlspn import TLSPN
 
@@ -99,6 +103,7 @@ class edit_model_tab(QWidget):
 		self.event_property_editor = EventPropertyEditorTLSPN ()
 		self.output_property_editor = OutputPropertyEditorTLSPN ()
 		self.simulation_property_editor = SimulationPropertyEditorTLSPN()
+		self.arc_property_editor= ArcPropertyEditorTLSPN()
 
 
 		self.layout = QVBoxLayout()
@@ -183,6 +188,8 @@ class edit_model_tab(QWidget):
 		sender = self.sender()
 		# print(sender)
 		if checked:
+			if self.TLSPN!=None:
+				self.TLSPN.reset_simulation()
 			if self.edit_scene.state == "add_event":
 				index = self.splitter.indexOf(self.event_property_editor)
 				self.splitter.replaceWidget(index, None)
@@ -252,6 +259,9 @@ class edit_model_tab(QWidget):
 			self.splitter.addWidget(self.simulation_property_editor)
 			self.current_property_editor = self.simulation_property_editor
 			self.simulation_property_editor.reset_simulation()
+		elif value == "arc":
+			self.splitter.addWidget(self.arc_property_editor)
+			self.current_property_editor = self.arc_property_editor
 		# self.output_property_editor.update_txt()
 
 		# Show the new editor if one was added

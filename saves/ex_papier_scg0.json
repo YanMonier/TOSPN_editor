@@ -1,0 +1,288 @@
+{
+    "general_info": {
+        "place_id_num": 4,
+        "transition_id_num": 5,
+        "arc_id_num": 10,
+        "event_id_num": 3,
+        "output_id_num": 1,
+        "model_type": "TLSPN",
+        "view_pos": [
+            -1889.269020642266,
+            -141.11057559214535
+        ]
+    },
+    "places": {
+        "0": {
+            "id": 0,
+            "name": "P.0",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -2020.0,
+            "pos_y": -380.0
+        },
+        "1": {
+            "id": 1,
+            "name": "P.1",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -1860.0,
+            "pos_y": -380.0
+        },
+        "2": {
+            "id": 2,
+            "name": "P.2",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -1940.0,
+            "pos_y": -220.0
+        },
+        "3": {
+            "id": 3,
+            "name": "P.3",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -1860.0,
+            "pos_y": -40.0
+        }
+    },
+    "transitions": {
+        "0": {
+            "id": 0,
+            "name": "T.0",
+            "type": "transition",
+            "timing_interval": [
+                1.0,
+                2.0
+            ],
+            "event_id": 2,
+            "output_id": 0,
+            "priority_level": 0,
+            "pos_x": -1860.0,
+            "pos_y": -120.0,
+            "orientation": 0
+        },
+        "1": {
+            "id": 1,
+            "name": "T.1",
+            "type": "transition",
+            "timing_interval": [
+                1.0,
+                1.0
+            ],
+            "event_id": 2,
+            "output_id": 0,
+            "priority_level": 1,
+            "pos_x": -2020.0,
+            "pos_y": -120.0,
+            "orientation": 0
+        },
+        "2": {
+            "id": 2,
+            "name": "T.2",
+            "type": "transition",
+            "timing_interval": [
+                1.0,
+                1.0
+            ],
+            "event_id": 1,
+            "output_id": 0,
+            "priority_level": 2,
+            "pos_x": -2020.0,
+            "pos_y": -300.0,
+            "orientation": 0
+        },
+        "3": {
+            "id": 3,
+            "name": "T.3",
+            "type": "transition",
+            "timing_interval": [
+                1.0,
+                1.0
+            ],
+            "event_id": 1,
+            "output_id": 0,
+            "priority_level": 3,
+            "pos_x": -1860.0,
+            "pos_y": -300.0,
+            "orientation": 0
+        },
+        "4": {
+            "id": 4,
+            "name": "T.4",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 0,
+            "output_id": 0,
+            "priority_level": 4,
+            "pos_x": -1860.0,
+            "pos_y": 40.0,
+            "orientation": 0
+        }
+    },
+    "arcs": {
+        "0": {
+            "id": 0,
+            "source_id": 3,
+            "source_type": "place",
+            "target_id": 4,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "1": {
+            "id": 1,
+            "source_id": 4,
+            "source_type": "transition",
+            "target_id": 1,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -1860.0,
+                    120.0
+                ],
+                [
+                    -1760.0,
+                    120.0
+                ],
+                [
+                    -1760.0,
+                    -380.0
+                ]
+            ]
+        },
+        "2": {
+            "id": 2,
+            "source_id": 1,
+            "source_type": "place",
+            "target_id": 3,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "3": {
+            "id": 3,
+            "source_id": 3,
+            "source_type": "transition",
+            "target_id": 2,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "4": {
+            "id": 4,
+            "source_id": 2,
+            "source_type": "transition",
+            "target_id": 2,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "5": {
+            "id": 5,
+            "source_id": 0,
+            "source_type": "place",
+            "target_id": 2,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "6": {
+            "id": 6,
+            "source_id": 2,
+            "source_type": "place",
+            "target_id": 1,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "7": {
+            "id": 7,
+            "source_id": 2,
+            "source_type": "place",
+            "target_id": 0,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "8": {
+            "id": 8,
+            "source_id": 0,
+            "source_type": "transition",
+            "target_id": 3,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "9": {
+            "id": 9,
+            "source_id": 1,
+            "source_type": "transition",
+            "target_id": 0,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -2020.0,
+                    -80.0
+                ],
+                [
+                    -2080.0,
+                    -80.0
+                ],
+                [
+                    -2080.0,
+                    -380.0
+                ]
+            ]
+        }
+    },
+    "events": {
+        "0": {
+            "id": 0,
+            "name": "\u03bb",
+            "transition_ids": [
+                4
+            ]
+        },
+        "1": {
+            "id": 1,
+            "name": "e1",
+            "transition_ids": [
+                2,
+                3
+            ]
+        },
+        "2": {
+            "id": 2,
+            "name": "e2",
+            "transition_ids": [
+                1,
+                0
+            ]
+        }
+    },
+    "outputs": {
+        "0": {
+            "id": 0,
+            "name": ".",
+            "transition_ids": [
+                1,
+                2,
+                4,
+                3,
+                0
+            ]
+        }
+    },
+    "marking": {
+        "0": 1,
+        "1": 1,
+        "2": 0,
+        "3": 0
+    },
+    "file_type": "TLSPN_edit_tab"
+}

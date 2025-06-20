@@ -114,20 +114,25 @@ class Place:
         self.token_number = count
         self.notify_listeners("token_changed", self.token_number)
 
-    def add_init_tokens(self, count):
-        """Add tokens to the place."""
+    """def add_init_tokens(self, count):
+        #"Add tokens to the place."
         self.init_token_number += count
         self.token_number = self.init_token_number
         self.notify_listeners("token_changed", self.init_token_number)
 
     def remove_init_tokens(self, count):
-        """Remove tokens from the place."""
+        #"Remove tokens from the place."
         if self.init_token_number >= count:
             self.init_token_number -= count
             self.token_number=self.init_token_number
             self.notify_listeners("token_changed", self.init_token_number)
             return True
-        return False
+        return False"""
+
+    def set_init_token_number(self, count):
+        self.init_token_number = count
+        self.token_number = count
+        self.notify_listeners("token_changed", self.token_number)
 
 
     

@@ -20,7 +20,7 @@ class TransitionPropertyEditorTLSPN (QWidget):
 		"""Initialize the transition property editor."""
 		super().__init__()
 		self.setFixedWidth(300)
-
+		self.TLSPN=None
 		# Layout
 		self.layout = QVBoxLayout(self)
 		self.layout.setAlignment(Qt.AlignTop)
@@ -40,6 +40,14 @@ class TransitionPropertyEditorTLSPN (QWidget):
 		self.name_layout.addWidget(self.name_label)
 		self.name_layout.addWidget(self.name_field)
 		self.transition_properties_layout.addLayout(self.name_layout)
+
+		#Line
+		self.transition_properties_layout.addSpacing(10)
+		line1 = QFrame()
+		line1.setFrameShape(QFrame.HLine)
+		line1.setFrameShadow(QFrame.Sunken)
+		self.transition_properties_layout.addWidget(line1)
+		self.transition_properties_layout.addSpacing(10)
 
 		# Event section
 		self.event_layout = QHBoxLayout()
@@ -82,6 +90,22 @@ class TransitionPropertyEditorTLSPN (QWidget):
 		self.output_layout.addWidget(self.output_combo)
 		self.transition_properties_layout.addLayout(self.output_layout)
 
+		#Line
+		# Line
+		self.transition_properties_layout.addSpacing(10)
+		line1 = QFrame()
+		line1.setFrameShape(QFrame.HLine)
+		line1.setFrameShadow(QFrame.Sunken)
+		self.transition_properties_layout.addWidget(line1)
+		self.transition_properties_layout.addSpacing(10)
+		#priority_list
+		self.priority_layout=QVBoxLayout()
+		self.priorityDisplay=ReorderableList(self)
+		self.priority_label = QLabel("Transition Priority Order (lower number fisrt) ")
+		self.priority_label.setAlignment(Qt.AlignCenter)
+		self.priority_layout.addWidget(self.priority_label)
+		self.priority_layout.addWidget(self.priorityDisplay)
+		self.transition_properties_layout.addLayout(self.priority_layout)
 		# Connect signals
 		self.name_field.textChanged.connect(self.update_name)
 		self.event_combo.currentTextChanged.connect(self.update_event)
@@ -211,7 +235,8 @@ class TransitionPropertyEditorTLSPN (QWidget):
 		# Update references
 		self.current_graphic = graphic_transition
 		self.current_transition = graphic_transition.transition
-
+		self.TLSPN=self.current_transition.TLSPN
+		self.priorityDisplay.reset()
 
 
 		# Update fields
@@ -263,3 +288,57 @@ class TransitionPropertyEditorTLSPN (QWidget):
 
 		# Show properties section
 		self.transition_properties_section.show()
+
+
+class ReorderableList(QWidget):
+	def __init__(self,transition_property_editor):
+		super().__init__()
+		self.transition_property_editor=transition_property_editor
+		self.setWindowTitle("Priority List")
+
+		layout = QVBoxLayout(self)
+		self.list_widget = QListWidget()
+		self.list_widget.setDragDropMode(QListWidget.InternalMove)
+		self.list_widget.setDefaultDropAction(Qt.MoveAction)
+		layout.addWidget(self.list_widget)
+		self.list_widget.model().rowsMoved.connect(self.update_priorities)
+
+	def reset(self):
+		self.list_widget.clear()
+		# Add items with custom data (priority will be updated dynamically)
+		for transition in sorted(self.transition_property_editor.TLSPN.transitions.values(), key=lambda x: x.priority_level):
+			item = QListWidgetItem()
+			item.setText(transition.name)
+			item.setData(Qt.UserRole, transition.id)
+			item.setData(Qt.UserRole+1,transition.priority_level)
+			self.list_widget.addItem(item)
+
+		# Connect model's rowsMoved signal to update priorities
+
+
+		# Set initial priorities
+		self.update_priorities()
+
+	def update_priorities(self):
+
+		#print("update prio")
+		is_break=False
+		for i in range(self.list_widget.count()):
+			item = self.list_widget.item(i)
+			priority = i  # 0 = highest priority
+
+			transition_id=item.data(Qt.UserRole)
+			if transition_id in self.transition_property_editor.TLSPN.transitions.keys():
+				transition=self.transition_property_editor.TLSPN.transitions[transition_id]
+				transition.priority_level=priority
+			else:
+				is_break=True
+				break
+			item.setData(Qt.UserRole+1,priority)
+			item.setText(f"{priority + 1}. {transition.name}")  # Update text for display
+		if is_break:
+			self.reset()
+		#print("Updated priorities:")
+		"""for i in range(self.list_widget.count()):
+			item = self.list_widget.item(i)
+			print(f"{item.text()} - priority {item.data(Qt.UserRole+1)}")"""

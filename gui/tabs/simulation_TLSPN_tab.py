@@ -13,6 +13,7 @@ from gui.widgets.property_editor.PlacePropertyEditorTLSPN  import PlacePropertyE
 from gui.widgets.property_editor.TransitionPropertyEditorTLSPN import TransitionPropertyEditorTLSPN
 from gui.widgets.property_editor.EventPropertyEditorTLSPN  import EventPropertyEditorTLSPN
 from gui.widgets.property_editor.OutputPropertyEditorTLSPN  import OutputPropertyEditorTLSPN
+from gui.widgets.property_editor.ArcPropertyEditorTLSPN  import ArcPropertyEditorTLSPN
 
 from core.model.TLSPN.tlspn import TLSPN
 
@@ -99,6 +100,7 @@ class edit_model_tab(QWidget):
 		self.transition_property_editor = TransitionPropertyEditorTLSPN ()
 		self.event_property_editor = EventPropertyEditorTLSPN ()
 		self.output_property_editor = OutputPropertyEditorTLSPN ()
+		self.arc_property_editor= ArcPropertyEditorTLSPN()
 
 
 		self.layout = QVBoxLayout()
@@ -232,6 +234,9 @@ class edit_model_tab(QWidget):
 		elif value == "output":
 			self.splitter.addWidget(self.output_property_editor)
 			self.current_property_editor = self.output_property_editor
+		elif value == "arc":
+			self.splitter.addWidget(self.arc_property_editor)
+			self.current_property_editor = self.arc_property_editor
 		# self.output_property_editor.update_txt()
 
 		# Show the new editor if one was added

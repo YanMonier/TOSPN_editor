@@ -115,6 +115,9 @@ class GraphConstructionScene(QGraphicsScene):
 		elif isinstance(item_selected, GraphTransitionItemTLSPN):
 			self.parent.set_property_editor("transition")
 			self.parent.current_property_editor.update_properties(item_selected)
+		elif isinstance(item_selected, GraphArcItemTLSPN):
+			self.parent.set_property_editor("arc")
+			self.parent.current_property_editor.update_properties(item_selected)
 
 	def unselect_item(self):
 		"""Clear property editor."""
@@ -198,12 +201,16 @@ class GraphConstructionScene(QGraphicsScene):
 	def keyPressEvent(self, event):
 		"""Handle key press events."""
 		if event.key() == Qt.Key_Delete:
-			if self.state in ["move", "add_transition", "add_place"]:
+			if self.state != "simulation":
 				if self.mono_selected_item is not None:
 					if isinstance(self.mono_selected_item, GraphArcItemTLSPN):
 						self.graphManager.remove_arc(self.mono_selected_item.arc)
+						self.empty_selected()
+						self.unselect_item()
 					elif isinstance(self.mono_selected_item, GraphTransitionItemTLSPN):
 						self.graphManager.remove_transition(self.mono_selected_item.transition)
+						self.empty_selected()
+						self.unselect_item()
 					elif isinstance(self.mono_selected_item, GraphPlaceItemTLSPN):
 						self.graphManager.remove_place(self.mono_selected_item.place)
 						self.empty_selected()
