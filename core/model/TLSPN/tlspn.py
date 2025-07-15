@@ -125,7 +125,7 @@ class TLSPN:
         self.notify_listeners("place_added", place)
         return place
     
-    def add_transition(self, name=None, event=None, output=None , id=None, timing_interval=None):
+    def add_transition(self, name=None, event=None, output=None , id=None, timing_interval=None, transition_priority=None):
         """Add a new transition to the TLSPN."""
 
         print("DEGBUG timing interval ",timing_interval)
@@ -146,7 +146,9 @@ class TLSPN:
             if id in self.transitions:
                 raise ValueError(f"Transition with ID {id} already exists")
             transition = Transition(self, id, name, event, output, timing_interval)
-            
+
+        if transition_priority!=None:
+            transition.priority_level=transition_priority
         self.transitions[transition.id] = transition
         self.notify_listeners("transition_added", transition)
         return transition
@@ -302,7 +304,7 @@ class TLSPN:
         
         # Load transitions
         for trans_data_i,trans_data in data["transitions"].items():
-            tlspn.add_transition(trans_data["name"], tlspn.get_event_by_id(trans_data["event_id"]), tlspn.get_output_by_id(trans_data["output_id"]), trans_data["id"], trans_data["timing_interval"] )
+            tlspn.add_transition(trans_data["name"], tlspn.get_event_by_id(trans_data["event_id"]), tlspn.get_output_by_id(trans_data["output_id"]), trans_data["id"], trans_data["timing_interval"], trans_data["priority_level"] )
         
         # Load arcs
         for arc_data_id,arc_data in data["arcs"].items():
@@ -524,7 +526,16 @@ class TLSPN:
         for k in range(new_time):
             self.simulation_step()
 
+    def get_unobservable_event(self):
+        unobservable_event=["e",".","λ"]
+        for output in self.outputs.values():
+            if output.observable==False:
+                unobservable_event.append(output.name)
 
+        for event in self.events.values():
+            if event.observable==False:
+                unobservable_event.append(event.name)
+        return( unobservable_event)
 
 
 

@@ -22,6 +22,11 @@ from gui.widgets.property_editor.OutputPropertyEditorTLSPN import OutputProperty
 
 from gui.tabs.edit_TLSPN_tab import edit_model_tab
 from core.model.SCG.scg import SCG
+from core.model.SCIA.scia import SCIA
+from core.model.SCIA.scia_observer import SCIA_observer
+
+import os
+
 
 class NewFileDialog(QDialog):
     def __init__(self):
@@ -172,7 +177,7 @@ class MainWindow(QMainWindow):
         #self.page1 = QWidget()
         #self.page2 = QWidget()
         #self.page3 = QWidget()
-        self.tabs.append(edit_model_tab())
+        self.tabs.append(edit_model_tab(self))
         #self.central_widget.addTab(self.page1, "Edit Mode")
         #self.central_widget.addTab(self.page2, "Class graph Mode")
         #self.central_widget.addTab(self.page3, "Simulation Mode")
@@ -499,6 +504,16 @@ class MainWindow(QMainWindow):
         construct_graph = QAction("Construct Graph", self)
         construct_graph.triggered.connect(self.construct_classgraph)
         opp_menu.addAction(construct_graph)
+
+        construct_scia = QAction("Construct SCIA", self)
+        construct_scia.triggered.connect(self.construct_SCIA)
+        opp_menu.addAction(construct_scia)
+
+        construct_scia_observer = QAction("Construct SCIA_observer", self)
+        construct_scia_observer.triggered.connect(self.construct_SCIA_observer)
+        opp_menu.addAction(construct_scia_observer)
+
+
         # Help Menu
         help_menu = menubar.addMenu("Help")
 
@@ -520,6 +535,30 @@ class MainWindow(QMainWindow):
                 print("state number",len(list(scg.state_hash_dic.keys())))
                 scg.plot_graph()
 
+    def construct_SCIA(self):
+        current_tab = self.central_widget.currentWidget()
+        if current_tab.tab_type == "TLSPN_edit_tab":
+            TLSPN=current_tab.TLSPN
+            if TLSPN != None:
+                scg=SCG(TLSPN)
+                scia=SCIA(scg,1)
+                scia.plot_graph()
+
+    def construct_SCIA_observer(self):
+        current_tab = self.central_widget.currentWidget()
+
+        if current_tab != None:
+            if current_tab.tab_type == "TLSPN_edit_tab":
+                TLSPN=current_tab.TLSPN
+                if TLSPN != None:
+                    scg=SCG(TLSPN)
+                    scia=SCIA(scg,1)
+                    scia_observer=SCIA_observer(scia)
+                    scia_observer.plot_graph()
+            return(scia_observer)
+        else:
+            return(None)
+
     # Action Handlers
     def new_file(self):
 
@@ -528,7 +567,7 @@ class MainWindow(QMainWindow):
             file_type = dialog.choice
 
             if dialog.choice == "TLSPN":
-                self.tabs.append(edit_model_tab())
+                self.tabs.append(edit_model_tab(self))
                 self.central_widget.addTab(self.tabs[-1], "Edit TLSPN")
                 self.central_widget.setCurrentWidget(self.tabs[-1])
 
@@ -537,10 +576,16 @@ class MainWindow(QMainWindow):
 
     def open_file(self):
         # Open a file dialog to select save location
+
+        directory = "saves"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "Open File",  # Dialog title
-            "",  # Initial directory ("" for current directory)
+             directory ,  # Initial directory ("" for current directory)
             "JSON Files (*.json);;All Files (*)"  # File type filters
         )
         if file_path:  # Check if the user selected a file
@@ -550,7 +595,7 @@ class MainWindow(QMainWindow):
                 file_type=save_dic["file_type"]
 
                 if file_type == "TLSPN_edit_tab":
-                    self.tabs.append(edit_model_tab())
+                    self.tabs.append(edit_model_tab(self))
                     self.central_widget.addTab(self.tabs[-1], "Edit TLSPN")
                     self.central_widget.setCurrentWidget(self.tabs[-1])
                     self.tabs[-1].load(file_path)
@@ -568,6 +613,6 @@ class MainWindow(QMainWindow):
             current_tab.save_file()
 
     def show_about(self):
-        QMessageBox.about(self, "About", "This editor was developed with funding from the ANR project MENACE.")
+        QMessageBox.about(self, "About", "This editor was developed with funding from the ANR project MENACE. \nRef: ANR-22-CE10-0002\n\nAuthor: Yan Monier")
 
 

@@ -16,10 +16,12 @@ from gui.widgets.property_editor.TransitionPropertyEditorTLSPN import Transition
 from gui.widgets.property_editor.EventPropertyEditorTLSPN  import EventPropertyEditorTLSPN
 from gui.widgets.property_editor.OutputPropertyEditorTLSPN  import OutputPropertyEditorTLSPN
 from gui.widgets.property_editor.SimulationPropertyEditorTLSPN  import SimulationPropertyEditorTLSPN
+from gui.widgets.property_editor.AttackDetectionPropertyEditorTLSPN import AttackDetectionPropertyEditorTLSPN
 
 from gui.widgets.property_editor.ArcPropertyEditorTLSPN  import ArcPropertyEditorTLSPN
 
 from core.model.TLSPN.tlspn import TLSPN
+import os
 
 class GraphicsView(QGraphicsView):
     def __init__(self, scene, parent):
@@ -80,8 +82,9 @@ class GraphicsView(QGraphicsView):
 
 
 class edit_model_tab(QWidget):
-	def __init__(self):
+	def __init__(self,MainWindow):
 		super().__init__()
+		self.MainWindow=MainWindow
 		self.tab_type="TLSPN_edit_tab"
 		self.TLSPN=None
 
@@ -103,6 +106,7 @@ class edit_model_tab(QWidget):
 		self.event_property_editor = EventPropertyEditorTLSPN ()
 		self.output_property_editor = OutputPropertyEditorTLSPN ()
 		self.simulation_property_editor = SimulationPropertyEditorTLSPN()
+		self.attack_detection_property_editor = AttackDetectionPropertyEditorTLSPN(self.MainWindow)
 		self.arc_property_editor= ArcPropertyEditorTLSPN()
 
 
@@ -157,6 +161,11 @@ class edit_model_tab(QWidget):
 		self.simulation_action.setCheckable(True)
 		self.simulation_action.triggered.connect(self.update_state)
 
+		self.attack_detection_action = QAction(QIcon(), "attack detection", self)
+		self.attack_detection_action.setShortcut("Ctrl+t")
+		self.attack_detection_action.setCheckable(True)
+		self.attack_detection_action.triggered.connect(self.update_state)
+
 		# Add editing actions to toolbar
 		self.toolbar.addAction(self.move_action)
 		self.toolbar.addAction(self.add_place_action)
@@ -165,6 +174,7 @@ class edit_model_tab(QWidget):
 		self.toolbar.addAction(self.add_event_action)
 		self.toolbar.addAction(self.add_output_action)
 		self.toolbar.addAction(self.simulation_action)
+		self.toolbar.addAction(self.attack_detection_action)
 
 		# Customize the toolbar
 		self.toolbar.setMovable(True)
@@ -178,7 +188,8 @@ class edit_model_tab(QWidget):
 			self.move_action,
 			self.add_event_action,
 			self.add_output_action,
-			self.simulation_action
+			self.simulation_action,
+			self.attack_detection_action
 		]
 
 		self.set_model(TLSPN())
@@ -229,6 +240,11 @@ class edit_model_tab(QWidget):
 				self.edit_scene.empty_selected()
 				self.set_property_editor("simulation")
 
+			elif sender == self.attack_detection_action:
+				self.edit_scene.state = "attack_detection"
+				self.edit_scene.empty_selected()
+				self.set_property_editor("attack_detection")
+
 			if self.edit_scene.state != "simulation":
 				for gtransition in self.edit_scene.graphManager.transition_to_graph_transition.values():
 					gtransition.unselected()
@@ -259,6 +275,10 @@ class edit_model_tab(QWidget):
 			self.splitter.addWidget(self.simulation_property_editor)
 			self.current_property_editor = self.simulation_property_editor
 			self.simulation_property_editor.reset_simulation()
+		elif value == "attack_detection":
+			self.splitter.addWidget(self.attack_detection_property_editor)
+			self.current_property_editor = self.attack_detection_property_editor
+			self.attack_detection_property_editor.reset_attack_detection()
 		elif value == "arc":
 			self.splitter.addWidget(self.arc_property_editor)
 			self.current_property_editor = self.arc_property_editor
@@ -273,15 +293,20 @@ class edit_model_tab(QWidget):
 		self.event_property_editor.set_TLSPN(TLSPN)
 		self.output_property_editor.set_TLSPN(TLSPN)
 		self.simulation_property_editor.set_TLSPN(TLSPN)
+		self.attack_detection_property_editor.set_TLSPN(TLSPN)
 		self.TLSPN=TLSPN
 		self.edit_scene.set_model(TLSPN)
 
 	def save_file(self):
 		# Open a file dialog to select save location
+
+		directory = "saves"
+		if not os.path.exists(directory):
+			os.makedirs(directory)
 		file_path, _ = QFileDialog.getSaveFileName(
 			self,
 			"Save File",  # Dialog title
-			"",  # Initial directory ("" for current directory)
+			directory,  # Initial directory ("" for current directory)
 			"JSON Files (*.json);;All Files (*)"  # File type filters
 		)
 		if file_path:  # Check if the user selected a file

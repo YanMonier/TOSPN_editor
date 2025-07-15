@@ -1,0 +1,3 @@
+2025-07-15 18:02:38,741 - DEBUG - write lines to 'sciagraph_plot'
+2025-07-15 18:02:38,742 - DEBUG - run [WindowsPath('dot'), '-Kneato', '-Tpdf', '-O', 'sciagraph_plot']
+2025-07-15 18:02:39,002 - DEBUG - view: 'sciagraph_plot.pdf'

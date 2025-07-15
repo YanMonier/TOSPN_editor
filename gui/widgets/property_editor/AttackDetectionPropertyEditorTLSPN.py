@@ -1,6 +1,6 @@
 import sys
 from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QAction, QMessageBox, QToolBar, QGraphicsView, \
-	QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow, QGroupBox,  QMessageBox, QFileDialog
+	QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow, QGroupBox, QFileDialog
 from PySide2.QtCore import QRectF, Qt, QPointF
 from PySide2.QtGui import QIcon
 from PySide2.QtGui import QBrush, QColor, QPen
@@ -14,43 +14,76 @@ from gui.graphics.graphics_TLSPN import GraphPlaceItemTLSPN, GraphTransitionItem
 	TempGraphLineTLSPN
 
 from utils.other_utils import OutputParser
-import json
+import math
 import os
+import json
 
-class SimulationPropertyEditorTLSPN(QWidget):
-	def __init__(self):
+class AttackDetectionPropertyEditorTLSPN(QWidget):
+	def __init__(self,MainWindow):
 		"""Initialize the output property editor."""
 		super().__init__()
+
+		self.MainWindow=MainWindow
 		self.setFixedWidth(300)
 		self.widget_list = []
 
+		self.timed_label_sequence = [] # Contiendra les événements
+		self.event_sequence=[]
+		self.current_step = -1  # Index courant de l’événement
+
 		self.timewidget = TimeControlWidget(self)
 		self.logViewer = LogViewer()
+
 
 		# Layout
 		self.layout = QVBoxLayout(self)
 		self.layout.setAlignment(Qt.AlignTop)
 
-		self.layout.addWidget(self.timewidget)
+		# Création du QSpinBox
+		self.step_spinbox = QSpinBox()
+		self.step_spinbox.setMinimum(1)  # Ne peut pas aller en dessous de 1
+		self.step_spinbox.setMaximum(999999)  # Optionnel : borne max
+		self.step_spinbox.setValue(1000)  # Valeur par défaut
+		self.step_spinbox.setPrefix("Step: ")  # Optionnel : texte devant
+		self.step_spinbox.setFixedWidth(120)  # Pour éviter que ce soit trop large
+
+		# Bouton associé
+		self.load_sequence_button = QPushButton("Load timed_event sequence")
+		self.load_sequence_button.clicked.connect(self.load_event_sequence)
+
+		# Layout horizontal pour placer les deux côte à côte
+		hbox = QHBoxLayout()
+		hbox.addWidget(self.load_sequence_button)
+		hbox.addWidget(self.step_spinbox)
+
+
+
+		self.layout.addLayout(hbox)
+
+		#self.layout.addWidget(self.timewidget)
 		self.layout.addWidget(self.logViewer)
+		self.check_by_step_button = QPushButton("Next step")
+		self.check_tot_button = QPushButton("Check tot")
+		self.layout.addWidget(self.check_by_step_button)
+		self.layout.addWidget(self.check_tot_button)
+
+		self.check_by_step_button.clicked.connect(self.check_next_event)
+
+
+
 		# output list label
 
-		self.export_detailed_button = QPushButton("Export timed-detailed sequence")
-		self.export_label_button = QPushButton("Export timed-label sequence")
-		self.layout.addWidget(self.export_detailed_button)
-		self.layout.addWidget(self.export_label_button )
 
-		self.export_detailed_button.clicked.connect(self.save_detailed_event_sequence)
-		self.export_label_button.clicked.connect(self.save_timed_event_sequence)
+
 
 		# Current TLSPN reference
 		self.TLSPN = None
+		self.SCIA_observer=None
 
 	def set_TLSPN(self, TLSPN):
 		"""Set the TLSPN model reference."""
 		self.TLSPN = TLSPN
-		self.TLSPN.add_listener(self)
-		self.reset_simulation()
+		#self.reset_attack_detection()
 
 
 		"""# Add existing outputs
@@ -62,33 +95,13 @@ class SimulationPropertyEditorTLSPN(QWidget):
 		"""Reset the entire editor."""
 		self.TLSPN = None
 
-	def reset_simulation(self):
+	def reset_attack_detection(self):
+		self.SCIA_observer=self.MainWindow.construct_SCIA_observer()
 		self.logViewer.clear_layout()
-		self.TLSPN.reset_simulation()
+		self.current_step = -1
 
 	def on_change(self, subject, event_type, data):
-		if event_type == "update_time":
-			self.timewidget.set_time(data)
-
-		elif event_type == "transition_enabled":
-			log = ("ENABLE", str(data[0]), str(data[1]), self.ms_to_str(data[2]))
-			self.logViewer.add_log(log)
-
-		elif event_type == "transition_disabled":
-			log = ("DISABLE", str(data[0]), str(data[1]), self.ms_to_str(data[2]))
-			self.logViewer.add_log(log)
-
-		elif event_type == "transition_activated":
-			log = ("ACTIVATE", str(data[0]), str(data[1]), self.ms_to_str(data[2]))
-			self.logViewer.add_log(log)
-
-		elif event_type == "transition_firable":
-			log = ("FIRABLE", str(data[0]), str(data[1]), self.ms_to_str(data[2]))
-			self.logViewer.add_log(log)
-
-		elif event_type == "transition_fired":
-			log = ("FIRE", str(data[0]), str(data[1]), self.ms_to_str(data[2]))
-			self.logViewer.add_log(log)
+		a=1
 
 	def ms_to_str(self, ms):
 		hours = (ms // (3600 * 1000)) % 24  # keep within 24h if you want
@@ -110,95 +123,72 @@ class SimulationPropertyEditorTLSPN(QWidget):
 		)
 		return total_ms
 
-	def save_timed_event_sequence(self):
-		timed_label_list=self.retrieve_timed_event_sequence()
-		# Open a file dialog to select save location
+	def convert_timed_event_sequence_into_event_sequence(self, timed_event_sequence, dt):
+		non_observable_event=self.TLSPN.get_unobservable_event()
+		converted_sequence=[]
+		last_time=float(timed_event_sequence[-1][1])
+		last_discrete_time_id=math.ceil(last_time/dt)
+		k=0
+		for i in range(last_discrete_time_id+1):
+			if k < len(timed_event_sequence):
+				next_time= math.ceil(float(timed_event_sequence[k][1])/dt)
+				while next_time == i:
+
+					new_event_name=timed_event_sequence[k][0]
+					if new_event_name not in non_observable_event:
+						converted_sequence.append(timed_event_sequence[k][0])
+					k+=1
+					if k<len(timed_event_sequence):
+						next_time = math.ceil(float(timed_event_sequence[k][1]) / dt)
+					else:
+						break
+			converted_sequence.append("r-e")
+		return(converted_sequence)
+
+
+	def load_event_sequence(self):
 		directory = "saved_timed_label_sequences"
 		if not os.path.exists(directory):
 			os.makedirs(directory)
-		file_path, _ = QFileDialog.getSaveFileName(
+		file_path, _ = QFileDialog.getOpenFileName(
 			self,
-			"Save File",  # Dialog title
-			directory,  # Initial directory ("" for current directory)
-			"JSON Files (*.json);;All Files (*)"  # File type filters
+			"Load Event Sequence",
+			directory,
+			"JSON Files (*.json);;All Files (*)"
 		)
-		if file_path:  # Check if the user selected a file
+		if file_path:
+			with open(file_path, 'r') as f:
+				self.SCIA_observer.reset_detection()
+				self.timed_label_sequence = json.load(f)
+				self.current_step = -1
+				self.logViewer.clear_layout()
 
-			with open(file_path, 'w') as json_file:
-				json.dump(timed_label_list, json_file, indent=4)
-			print(f"File saved to: {file_path}")
-			QMessageBox.information(self, "Save Sequence", "Timed-event sequence saved !")
+				self.sequence=self.convert_timed_event_sequence_into_event_sequence(self.timed_label_sequence,self.step_spinbox.value())
 
-			return("saved")
-
-		return ("canceled")
-
-
-	def save_detailed_event_sequence(self):
-		timed_label_list=self.retrieve_detailed_simulation_sequence()
-		# Open a file dialog to select save location
-
-		directory="saved_detailed_simulation_sequences"
-		if not os.path.exists(directory):
-			os.makedirs(directory)
-		file_path, _ = QFileDialog.getSaveFileName(
-			self,
-			"Save File",  # Dialog title
-			directory,  # Initial directory ("" for current directory)
-			"JSON Files (*.json);;All Files (*)"  # File type filters
-		)
-		if file_path:  # Check if the user selected a file
-
-			with open(file_path, 'w') as json_file:
-				json.dump(timed_label_list, json_file, indent=4)
-			print(f"File saved to: {file_path}")
-			QMessageBox.information(self, "Save File", "Detailed simulation sequence saved !")
-
-			return("saved")
-
-		return ("canceled")
+				# Ajouter tous les événements dans le log viewer
+				for event in self.sequence:
+					self.logViewer.add_event_line(event)
 
 
+	def check_next_event(self):
+		if not self.sequence or self.current_step + 1 >= len(self.sequence):
+			QMessageBox.information(self, "Info", "No more events to check.")
+			return
 
+		# Avancer
+		self.current_step += 1
+		event = self.sequence[self.current_step]
+		print("event checked:",event)
+		# Tester avec ton automate ici
+		success = self.SCIA_observer.give_next_detected_state(event)  # À adapter selon ton code
 
-	def retrieve_detailed_simulation_sequence(self):
-		log_list = []
-		for i in range(self.logViewer.scroll_layout.count()):
-			item = self.logViewer.scroll_layout.itemAt(i)
-			widget = item.widget()
-			if widget is not None:
-				log_list.append((widget.log_type, widget.trans_id, widget.name, self.str_to_ms(widget.time)))
+		# Appliquer la surbrillance
+		self.logViewer.highlight_line(self.current_step, success)
+		print("has highlighted:", self.current_step, success)
 
-		print(log_list)
-		return (log_list)
-
-	def retrieve_timed_event_sequence(self):
-		timed_label_list = []
-		log_list = self.retrieve_detailed_simulation_sequence()
-		last_time=None
-		elem_at_this_time=[]
-		for elem in log_list:
-			if last_time!=elem[3]:
-				last_time=elem[3]
-				elem_at_this_time=[]
-			if elem[0] == "ACTIVATE":
-				transition_id = elem[1]
-				transition = self.TLSPN.transitions[int(transition_id)]
-				input=transition.event
-				if input.name!="λ":
-					if input.name not in elem_at_this_time:
-						elem_at_this_time.append(input.name)
-						timed_label_list.append((input.name,elem[3]))
-			elif elem[0] == "FIRE":
-				transition_id = elem[1]
-				transition = self.TLSPN.transitions[int(transition_id)]
-				output = transition.output
-				if output.name != ".":
-					if output.name not in elem_at_this_time:
-						timed_label_list.append((output.name, elem[3]))
-						elem_at_this_time.append(output.name)
-		print(timed_label_list)
-		return(timed_label_list)
+		# Retirer la surbrillance précédente
+		if self.current_step > 0:
+			self.logViewer.reset_line_style(self.current_step - 1)
 
 
 class TimeControlWidget(QWidget):
@@ -259,13 +249,9 @@ class TimeControlWidget(QWidget):
 
 
 class LogEntryWidget(QWidget):
-	def __init__(self, log_type, trans_id , name, time):
+	def __init__(self, log_type, id, name, time):
 		super().__init__()
 
-		self.log_type= log_type
-		self.name=name
-		self.time=time
-		self.trans_id=trans_id
 		layout = QHBoxLayout()
 
 		# Type
@@ -326,24 +312,7 @@ class LogViewer(QWidget):
 
 		self.scroll_area.setWidget(self.scroll_content)
 		self.main_layout.addWidget(self.scroll_area)
-
-		# Example log entries
-		logs = [
-			("INFO","1" , "Startup complete fds fds fds fds fds fds fds fds", "10:00"),
-			("ERROR","1", "Connection failed", "10:05"),
-			("DEBUG","1", "Retrying login", "10:06"),
-			("INFO","1", "User logged in", "10:08"),
-			("WARNING","1", "Low battery", "10:10"),
-			("INFO","1", "Process completed", "10:12"),
-			("ERROR","1", "Timeout occurred", "10:15"),
-			("DEBUG","1", "Cleanup started", "10:17"),
-			("INFO","1", "Shutdown", "10:20"),
-		]
-
-		# Add each log as a widget
-		for log in logs:
-			entry_widget = LogEntryWidget(*log)
-			self.scroll_layout.addWidget(entry_widget)
+		self.event_lines=[]
 
 	def clear_layout(self):
 		while self.scroll_layout.count():
@@ -351,14 +320,37 @@ class LogViewer(QWidget):
 			widget = item.widget()
 			if widget is not None:
 				widget.setParent(None)  # Removes the widget from the layout
+		self.event_lines = []
 
-	def add_log(self, log):
-		entry_widget = LogEntryWidget(*log)
-		self.scroll_layout.addWidget(entry_widget)
+	def add_event_line(self, event_text):
+		entry = QLabel(event_text)
+		entry.setStyleSheet("padding: 2px;")
+		self.scroll_layout.addWidget(entry)
+
+		# Stocker les entrées si besoin
+		if not hasattr(self, "event_lines"):
+			self.event_lines = []
+		self.event_lines.append(entry)
+
+	def highlight_line(self, index, success=True):
+		if not hasattr(self, "event_lines") or index >= len(self.event_lines):
+			print("here bug")
+			return
+
+		print("here launched")
+		color = "#cce5ff" if success else "#f8d7da"  # Bleu ou rouge clair
+		border_color = "#007bff" if success else "#dc3545"
+
+		style = f"""
+			background-color: {color};
+			border: 2px solid {border_color};
+			padding: 2px;
+		"""
+		self.event_lines[index].setStyleSheet(style)
+		self.event_lines[index].repaint()
 		QApplication.processEvents()
-		self.scroll_area.verticalScrollBar().setValue(self.scroll_area.verticalScrollBar().maximum())
 
-
-
-
-
+	def reset_line_style(self, index):
+		if not hasattr(self, "event_lines") or index >= len(self.event_lines):
+			return
+		self.event_lines[index].setStyleSheet("padding: 2px;")

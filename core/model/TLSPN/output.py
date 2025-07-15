@@ -20,6 +20,7 @@ class Output:
 
         # Event listener pattern support
         self._listeners = []
+        self.observable=True
     
     def add_listener(self, listener):
         """Add a listener to this output."""

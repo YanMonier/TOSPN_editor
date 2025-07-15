@@ -1,0 +1,144 @@
+{
+    "general_info": {
+        "place_id_num": 4,
+        "transition_id_num": 3,
+        "arc_id_num": 3,
+        "event_id_num": 1,
+        "output_id_num": 1,
+        "model_type": "TLSPN",
+        "view_pos": [
+            -1447.0,
+            -299.0
+        ]
+    },
+    "places": {
+        "0": {
+            "id": 0,
+            "name": "P.0",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -1560.0,
+            "pos_y": -420.0
+        },
+        "1": {
+            "id": 1,
+            "name": "P.1",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -1422.0,
+            "pos_y": -410.0
+        },
+        "2": {
+            "id": 2,
+            "name": "P.2",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -1320.0,
+            "pos_y": -420.0
+        }
+    },
+    "transitions": {
+        "0": {
+            "id": 0,
+            "name": "T.0",
+            "type": "transition",
+            "timing_interval": [
+                3.0,
+                5.0
+            ],
+            "event_id": 0,
+            "output_id": 0,
+            "priority_level": 0,
+            "pos_x": -1560.0,
+            "pos_y": -280.0,
+            "orientation": 0
+        },
+        "1": {
+            "id": 1,
+            "name": "T.1",
+            "type": "transition",
+            "timing_interval": [
+                7.0,
+                9.0
+            ],
+            "event_id": 0,
+            "output_id": 0,
+            "priority_level": 1,
+            "pos_x": -1420.0,
+            "pos_y": -280.0,
+            "orientation": 0
+        },
+        "2": {
+            "id": 2,
+            "name": "T.2",
+            "type": "transition",
+            "timing_interval": [
+                4.0,
+                6.0
+            ],
+            "event_id": 0,
+            "output_id": 0,
+            "priority_level": 2,
+            "pos_x": -1320.0,
+            "pos_y": -280.0,
+            "orientation": 0
+        }
+    },
+    "arcs": {
+        "0": {
+            "id": 0,
+            "source_id": 0,
+            "source_type": "place",
+            "target_id": 0,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "1": {
+            "id": 1,
+            "source_id": 1,
+            "source_type": "place",
+            "target_id": 1,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "2": {
+            "id": 2,
+            "source_id": 2,
+            "source_type": "place",
+            "target_id": 2,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        }
+    },
+    "events": {
+        "0": {
+            "id": 0,
+            "name": "\u03bb",
+            "transition_ids": [
+                0,
+                1,
+                2
+            ]
+        }
+    },
+    "outputs": {
+        "0": {
+            "id": 0,
+            "name": ".",
+            "transition_ids": [
+                0,
+                1,
+                2
+            ]
+        }
+    },
+    "marking": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+    },
+    "file_type": "TLSPN_edit_tab"
+}

@@ -151,25 +151,25 @@ class Transition:
             if self.check_enabled():
                 self.simulation_state="enabled"
                 self.is_enabled=True
-                self.TLSPN.notify_listeners("transition_enabled",[self.name,time])
+                self.TLSPN.notify_listeners("transition_enabled",[self.id,self.name,time])
                 self.notify_listeners("simulation_enabled")
 
         elif self.simulation_state=="enabled":
             if not self.check_enabled():
                 self.simulation_state = "disabled"
                 self.is_enabled = False
-                self.TLSPN.notify_listeners("transition_disabled", [self.name, time])
+                self.TLSPN.notify_listeners("transition_disabled", [self.id,self.name, time])
                 self.notify_listeners("simulation_not_enabled")
         elif self.simulation_state=="has_fired":
             if self.check_enabled():
                 self.simulation_state = "enabled"
                 self.is_enabled = True
-                self.TLSPN.notify_listeners("transition_enabled", [self.name, time])
+                self.TLSPN.notify_listeners("transition_enabled", [self.id,self.name, time])
                 self.notify_listeners("simulation_enabled")
             else:
                 self.simulation_state = "disabled"
                 self.is_enabled = False
-                self.TLSPN.notify_listeners("transition_disabled", [self.name, time])
+                self.TLSPN.notify_listeners("transition_disabled", [self.id, self.name, time])
                 self.notify_listeners("simulation_not_enabled")
 
 
@@ -181,7 +181,7 @@ class Transition:
             for arc in self.input_arcs:
                 arc.source.remove_tokens(arc.weight)
             self.simulation_state = "activated"
-            self.TLSPN.notify_listeners("transition_activated", [self.name, time])
+            self.TLSPN.notify_listeners("transition_activated", [self.id, self.name, time])
             self.notify_listeners("simulation_activated_cant_fire")
 
 
@@ -189,14 +189,14 @@ class Transition:
         if self.simulation_state == "activated":
             if time >= self.min_firing_time and time <= self.max_firing_time:
                 self.simulation_state = "firable"
-                self.TLSPN.notify_listeners("transition_firable", [self.name, time])
+                self.TLSPN.notify_listeners("transition_firable", [self.id, self.name, time])
                 self.notify_listeners("simulation_activated_can_fire")
 
     def fire(self,time):
         if self.simulation_state == "firable" and time <= self.max_firing_time:
             for arc in self.output_arcs:
                 arc.target.add_tokens(arc.weight)
-            self.TLSPN.notify_listeners("transition_fired", [self.name, time])
+            self.TLSPN.notify_listeners("transition_fired", [self.id, self.name, time])
             self.simulation_state="has_fired"
         elif self.simulation_state == "firable":
             raise Exception(f"timing error of firing for transition {self.name} at time {time} ")

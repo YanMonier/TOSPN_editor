@@ -57,6 +57,7 @@ class SCG:
 		self.state_hash_dic={}
 		self.edge_list=[]
 		self.states={}
+		self.init_state=None
 
 		self.add_new_state(None,None)
 		cont=True
@@ -88,6 +89,9 @@ class SCG:
 
 	def add_edge(self,source, target, arc):
 		self.edge_list.append(Edge(source,target,arc))
+		source.output_edge.append(self.edge_list[-1])
+		target.input_edge.append(self.edge_list[-1])
+
 
 	def explore_new_state(self,state):
 		arc_list=state.ArcGeneration()
@@ -178,6 +182,8 @@ class StateSCG:
 		self.SCG=SCG
 		self.id=0
 		self.debug_time_constraints = {}
+		self.output_edge=[]
+		self.input_edge=[]
 
 		if last_state != None:
 			self.enabled_token_dic=copy.deepcopy(last_state.enabled_token_dic)
@@ -240,6 +246,8 @@ class StateSCG:
 			self.dist_dic = {}
 			self.time_constraints={}
 
+			self.SCG.init_state=self
+
 			for place_id in self.SCG.TLSPN.places.keys():
 				self.enabled_token_dic[place_id]=self.SCG.TLSPN.places[place_id].token_number
 				self.reserved_token_dic[place_id]=0
@@ -300,34 +308,62 @@ class StateSCG:
 
 	def ArcGeneration(self):
 		arcList=[]
+		self.get_all_event_enabled()
 		if self.activated_transition!=[]:
 			sigma = []
 			is_lambda = 0
-			for transition_id in self.activated_transition:
-				if self.SCG.TLSPN.transitions[transition_id].event.name=="λ":
-					is_lambda = 1
-			"""if is_lambda==1:
-				usigma = 0
-			else:"""
-			activated_transition_list=self.activated_transition
-			usigma = self.get_upper_bound_beta(activated_transition_list[0])
-			for k in range(1,len(activated_transition_list)):
-				if usigma>self.get_upper_bound_beta(activated_transition_list[k]):
-					usigma=self.get_upper_bound_beta(activated_transition_list[k])
 
-			for tj in activated_transition_list:
-				if self.get_lower_bound_alpha(tj)<=usigma:
-					print(f"DEBUG state: {self.id} trans:{tj}, lower bound: {self.get_lower_bound_alpha(tj)}, upper:{self.get_upper_bound_beta(tj)}")
-					if self.get_upper_bound_beta(tj) == self.get_lower_bound_alpha(tj) and self.get_upper_bound_beta(tj)==usigma:
-						sigma.append(tj)
-					else:
-						arcList.append(Arc("firing",tj,[self.get_lower_bound_alpha(tj),usigma]))
-			if sigma != []:
-				arcList.append(Arc("sigma",sigma,[usigma,usigma]))
-		self.get_all_event_enabled()
+			if self.event_enabled != []:
+				if "λ" in self.event_enabled:
+					is_lambda = 1
+			if is_lambda==1:
+				usigma = 0
+				self.usigma=0
+			else:
+				activated_transition_list=self.activated_transition
+				usigma = self.get_upper_bound_beta(activated_transition_list[0])
+				for k in range(len(activated_transition_list)):
+					if usigma>self.get_upper_bound_beta(activated_transition_list[k]):
+						usigma=self.get_upper_bound_beta(activated_transition_list[k])
+
+					"""for k2 in range(len(activated_transition_list)):
+						if k!=k2:
+							if self.get_constraint_gamma(activated_transition_list[k],activated_transition_list[k2])<=0:#id1-id2
+								min_val=-self.get_constraint_gamma(activated_transition_list[k],activated_transition_list[k2])
+								if usigma>min_val:
+									usigma=min_val"""
+				print(f"DEGUB USIGMA:{usigma}")
+				self.usigma=usigma
+
+
+				for tj in activated_transition_list:
+					if self.get_lower_bound_alpha(tj)<=usigma:
+						print(f"DEBUG state: {self.id} trans:{tj}, lower bound: {self.get_lower_bound_alpha(tj)}, upper:{self.get_upper_bound_beta(tj)}")
+						if self.get_upper_bound_beta(tj) == self.get_lower_bound_alpha(tj) and self.get_upper_bound_beta(tj)==usigma:
+							can_fire = True
+							for tj2 in activated_transition_list:
+								if self.get_constraint_gamma(tj2, tj) < 0:
+									can_fire = False
+							if can_fire:
+								sigma.append(tj)
+						else:
+							can_fire=True
+							for tj2 in activated_transition_list:
+								if self.get_constraint_gamma(tj2,tj)<0:
+									can_fire = False
+							if can_fire:
+								arcList.append(Arc("firing",tj,[self.get_lower_bound_alpha(tj),usigma]))
+				if sigma != []:
+					arcList.append(Arc("sigma",sigma,[usigma,usigma]))
+		else:
+			self.usigma = INF
+
+
 		if self.event_enabled!=[]:
 			if "λ" in self.event_enabled:
 				arcList.append(Arc("activation", "λ" , [0, 0]))
+				self.usigma = 0
+
 			else:
 				if self.activated_transition!=[]:
 					if usigma != 0:
@@ -385,11 +421,11 @@ class StateSCG:
 	def get_priority_transition(self,transition_id_list):
 		selected_id=transition_id_list[0]
 		for k in range(len(transition_id_list)):
-			if self.SCG.TLSPN.transitions[transition_id_list[k]].priority_level > self.SCG.TLSPN.transitions[selected_id].priority_level:
+			if self.SCG.TLSPN.transitions[transition_id_list[k]].priority_level < self.SCG.TLSPN.transitions[selected_id].priority_level:
 				selected_id=transition_id_list[k]
 		return(selected_id)
 
-	def normalize(self):
+	def normalize(self): #give the canonical form
 		variables = copy.deepcopy(self.activated_transition)
 		variables.append("src")
 		constraints = []
@@ -431,7 +467,6 @@ class StateSCG:
 				self.time_constraints[key][0] = - self.dist_dic[key]["src"]
 
 			return False
-
 
 
 

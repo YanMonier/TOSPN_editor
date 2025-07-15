@@ -8,7 +8,7 @@ from PySide2.QtCore import QSize
 
 from PySide2.QtWidgets import (QSizePolicy, QComboBox, QFrame, QListWidgetItem, QVBoxLayout, QWidget, QLineEdit,
 							   QSpinBox, QPushButton, QColorDialog, QSplitter, QLabel, QHBoxLayout, QDoubleSpinBox,
-							   QDialog, QListWidget, QDialogButtonBox, QSpacerItem)
+							   QDialog, QListWidget, QDialogButtonBox, QSpacerItem,QCheckBox)
 from PySide2.QtCore import Qt, Signal
 from gui.graphics.graphics_TLSPN import GraphPlaceItemTLSPN , GraphTransitionItemTLSPN , GraphArcItemTLSPN , TempGraphLineTLSPN
 
@@ -155,6 +155,13 @@ class OutputListItemWidget(QWidget):
 		self.layout.addWidget(self.name_label)
 		self.layout.setAlignment(self.name_label, Qt.AlignLeft)
 
+		# Checkbox "Observable"
+		self.observable_checkbox = QCheckBox("Observable")
+		self.observable_checkbox.setChecked(self.outputItem.observable)
+		self.layout.addWidget(self.observable_checkbox)
+		self.layout.setAlignment(self.observable_checkbox, Qt.AlignRight)
+		self.observable_checkbox.stateChanged.connect(self.on_observable_changed)
+
 		# Remove button
 		self.remove_button = QPushButton("-")
 		self.remove_button.setFixedSize(50, 20)
@@ -166,6 +173,14 @@ class OutputListItemWidget(QWidget):
 
 		# Add as listener to the output
 		self.outputItem.add_listener(self)
+
+	def on_observable_changed(self, state):
+		"""Update outputItem.observable when checkbox changes."""
+		is_checked = (state == Qt.Checked)
+		self.outputItem.observable=is_checked
+
+	# Si tu veux tu peux émettre un signal ou notifier l'objet TLSPN ici
+	# print(f"Observable changed to {is_checked} for output {self.outputItem.name}")
 
 	def on_change(self, subject, output_type, data):
 		"""Handle changes in the output model."""
@@ -242,7 +257,7 @@ class AddOutputDialog(QDialog):
 			return False
 
 		# Don't allow lambda output name
-		if name == "λ":
+		if name == "λ" or name == "e" or name == '.' or name =="r-e":
 			return False
 
 		# Check if name is unique (except for current output)
