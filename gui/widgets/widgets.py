@@ -113,12 +113,18 @@ class DraggableTextItem(DraggableItem):
         # Calculate the bounding rect based on the font and text
         line_height = QFontMetrics(self.font).height()
         lines = new_text.split("\n")
-        text_width = max(QFontMetrics(self.font).width(line) for line in lines)
+
+        metrics = QFontMetrics(self.font)
+        text_width = max(metrics.horizontalAdvance(line) for line in lines)
+        #text_width = max(QFontMetrics(self.font).width(line) for line in lines)
         text_height = line_height * len(lines)
 
         # Update the bounding rect to fit the full text
         self.prepareGeometryChange()  # Notify the scene of the change
-        self.boundingRectValue = QRectF(0, 0, text_width, text_height)
+
+        padding = 4  # ou 2 ou plus selon le rendu
+        self.boundingRectValue = QRectF(0, 0, text_width + padding * 2, text_height + padding * 2)
+        #self.boundingRectValue = QRectF(0, 0, text_width, text_height)
 
         # Trigger a repaint
         self.update()

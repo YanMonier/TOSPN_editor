@@ -1,0 +1,193 @@
+{
+    "signal_mapping": {
+        "id": {
+            "0": {
+                "name": "in_convey",
+                "source_id": 12,
+                "units": "fdsq",
+                "description": "fdsq"
+            },
+            "1": {
+                "name": "set_z_0",
+                "source_id": 99,
+                "units": "dsqf",
+                "description": "fdsqfgfs"
+            },
+            "2": {
+                "name": "grab_actuator",
+                "source_id": "0",
+                "units": "",
+                "description": ""
+            },
+            "3": {
+                "name": "grab_sensor",
+                "source_id": "0",
+                "units": "",
+                "description": ""
+            },
+            "4": {
+                "name": "set_z_90_actuator",
+                "source_id": "0",
+                "units": "",
+                "description": ""
+            },
+            "5": {
+                "name": "z_pos_sensor",
+                "source_id": "0",
+                "units": "",
+                "description": ""
+            },
+            "6": {
+                "name": "camera_sensor_1",
+                "source_id": "0",
+                "units": "",
+                "description": ""
+            },
+            "7": {
+                "name": "camera_sensor_2",
+                "source_id": "0",
+                "units": "",
+                "description": ""
+            },
+            "8": {
+                "name": "camera_sensor_3",
+                "source_id": "0",
+                "units": "",
+                "description": ""
+            }
+        },
+        "param": {
+            "signal_id": 9
+        }
+    },
+    "event_mapping": {
+        "event": {
+            "id": {
+                "1": {
+                    "rule": [
+                        "R",
+                        [
+                            [
+                                "S.0"
+                            ],
+                            "AND",
+                            [
+                                "S.1"
+                            ]
+                        ]
+                    ]
+                },
+                "2": {
+                    "rule": [
+                        "R",
+                        [
+                            "S.0"
+                        ]
+                    ]
+                },
+                "3": {
+                    "rule": [
+                        "F",
+                        [
+                            "S.1"
+                        ]
+                    ]
+                },
+                "4": {
+                    "rule": ""
+                },
+                "5": {
+                    "rule": ""
+                },
+                "6": {
+                    "rule": ""
+                },
+                "7": {
+                    "rule": ""
+                },
+                "8": {
+                    "rule": ""
+                },
+                "9": {
+                    "rule": ""
+                },
+                "10": {
+                    "rule": ""
+                },
+                "11": {
+                    "rule": ""
+                },
+                "12": {
+                    "rule": ""
+                },
+                "13": {
+                    "rule": ""
+                },
+                "14": {
+                    "rule": ""
+                },
+                "15": {
+                    "rule": ""
+                }
+            }
+        },
+        "output": {
+            "id": {
+                "12": {
+                    "rule": ""
+                },
+                "13": {
+                    "rule": ""
+                },
+                "14": {
+                    "rule": ""
+                },
+                "15": {
+                    "rule": ""
+                },
+                "16": {
+                    "rule": ""
+                },
+                "17": {
+                    "rule": ""
+                },
+                "18": {
+                    "rule": ""
+                },
+                "19": {
+                    "rule": ""
+                },
+                "20": {
+                    "rule": ""
+                },
+                "21": {
+                    "rule": ""
+                },
+                "22": {
+                    "rule": ""
+                },
+                "23": {
+                    "rule": ""
+                },
+                "24": {
+                    "rule": ""
+                },
+                "25": {
+                    "rule": ""
+                },
+                "26": {
+                    "rule": ""
+                },
+                "27": {
+                    "rule": ""
+                },
+                "28": {
+                    "rule": ""
+                },
+                "29": {
+                    "rule": ""
+                }
+            }
+        }
+    }
+}

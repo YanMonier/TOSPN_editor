@@ -17,6 +17,7 @@ from gui.widgets.property_editor.EventPropertyEditorTLSPN  import EventPropertyE
 from gui.widgets.property_editor.OutputPropertyEditorTLSPN  import OutputPropertyEditorTLSPN
 from gui.widgets.property_editor.SimulationPropertyEditorTLSPN  import SimulationPropertyEditorTLSPN
 from gui.widgets.property_editor.AttackDetectionPropertyEditorTLSPN import AttackDetectionPropertyEditorTLSPN
+from gui.widgets.property_editor.OnlineAttackDetectionPropertyEditorTLSPN import OnlineAttackDetectionPropertyEditorTLSPN
 
 from gui.widgets.property_editor.ArcPropertyEditorTLSPN  import ArcPropertyEditorTLSPN
 
@@ -107,6 +108,7 @@ class edit_model_tab(QWidget):
 		self.output_property_editor = OutputPropertyEditorTLSPN ()
 		self.simulation_property_editor = SimulationPropertyEditorTLSPN()
 		self.attack_detection_property_editor = AttackDetectionPropertyEditorTLSPN(self.MainWindow)
+		self.online_attack_detection_property_editor = OnlineAttackDetectionPropertyEditorTLSPN(self.MainWindow)
 		self.arc_property_editor= ArcPropertyEditorTLSPN()
 
 
@@ -166,6 +168,11 @@ class edit_model_tab(QWidget):
 		self.attack_detection_action.setCheckable(True)
 		self.attack_detection_action.triggered.connect(self.update_state)
 
+		self.online_attack_detection_action = QAction(QIcon(), "online attack detection", self)
+		self.online_attack_detection_action.setShortcut("Ctrl+d")
+		self.online_attack_detection_action.setCheckable(True)
+		self.online_attack_detection_action.triggered.connect(self.update_state)
+
 		# Add editing actions to toolbar
 		self.toolbar.addAction(self.move_action)
 		self.toolbar.addAction(self.add_place_action)
@@ -175,6 +182,7 @@ class edit_model_tab(QWidget):
 		self.toolbar.addAction(self.add_output_action)
 		self.toolbar.addAction(self.simulation_action)
 		self.toolbar.addAction(self.attack_detection_action)
+		self.toolbar.addAction(self.online_attack_detection_action)
 
 		# Customize the toolbar
 		self.toolbar.setMovable(True)
@@ -189,7 +197,8 @@ class edit_model_tab(QWidget):
 			self.add_event_action,
 			self.add_output_action,
 			self.simulation_action,
-			self.attack_detection_action
+			self.attack_detection_action,
+			self.online_attack_detection_action
 		]
 
 		self.set_model(TLSPN())
@@ -245,6 +254,11 @@ class edit_model_tab(QWidget):
 				self.edit_scene.empty_selected()
 				self.set_property_editor("attack_detection")
 
+			elif sender == self.online_attack_detection_action:
+				self.edit_scene.state = "online_attack_detection"
+				self.edit_scene.empty_selected()
+				self.set_property_editor("online_attack_detection")
+
 			if self.edit_scene.state != "simulation":
 				for gtransition in self.edit_scene.graphManager.transition_to_graph_transition.values():
 					gtransition.unselected()
@@ -278,7 +292,12 @@ class edit_model_tab(QWidget):
 		elif value == "attack_detection":
 			self.splitter.addWidget(self.attack_detection_property_editor)
 			self.current_property_editor = self.attack_detection_property_editor
-			self.attack_detection_property_editor.reset_attack_detection()
+			self.attack_detection_property_editor.set_SCIA_observer()
+		elif value == "online_attack_detection":
+			self.splitter.addWidget(self.online_attack_detection_property_editor)
+			self.current_property_editor = self.online_attack_detection_property_editor
+			self.online_attack_detection_property_editor.set_SCIA_observer()
+
 		elif value == "arc":
 			self.splitter.addWidget(self.arc_property_editor)
 			self.current_property_editor = self.arc_property_editor
@@ -294,6 +313,7 @@ class edit_model_tab(QWidget):
 		self.output_property_editor.set_TLSPN(TLSPN)
 		self.simulation_property_editor.set_TLSPN(TLSPN)
 		self.attack_detection_property_editor.set_TLSPN(TLSPN)
+		self.online_attack_detection_property_editor.set_TLSPN(TLSPN)
 		self.TLSPN=TLSPN
 		self.edit_scene.set_model(TLSPN)
 

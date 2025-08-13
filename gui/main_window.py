@@ -9,7 +9,7 @@ import sys
 from gui.widgets.widgets import DraggableItem,DraggablePoint, LineBetweenPoints
 from gui.dialogs import MessageDialog, CustomDialog
 
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QFileDialog, QInputDialog
+from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QFileDialog, QInputDialog, QSpinBox
 from PySide2.QtCore import Qt
 
 from gui.graphics.graphics_scene import GraphConstructionScene
@@ -27,6 +27,57 @@ from core.model.SCIA.scia_observer import SCIA_observer
 
 import os
 
+
+class SCIASpinBoxDialog(QDialog):
+    def __init__(self,TLSPN):
+        super().__init__()
+
+        self.pgcd, self.divs=TLSPN.give_common_denominator()
+        self.setWindowTitle("SCIA parameters")
+
+        self.label = QLabel("Step value for SCIA (ms):")
+
+        self.spin_box = QSpinBox()
+        self.spin_box.setMinimum(0)
+        self.spin_box.setMaximum(99999)
+        self.spin_box.setSingleStep(1)  # pas de 5
+        self.spin_box.setValue(self.pgcd)
+
+        # Label pour message d'erreur
+        self.error_label = QLabel("")
+        self.error_label.setStyleSheet("color: red;")
+        self.error_label.setVisible(False)  # caché par défaut
+
+
+        self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.spin_box)
+        layout.addWidget(self.error_label)
+        layout.addWidget(self.button_box)
+
+
+        self.setLayout(layout)
+
+        self.spin_box.valueChanged.connect(self.check_value)
+        self.check_value(self.spin_box.value())
+
+    def check_value(self, value):
+
+        # Exemple de condition : le nombre doit être divisible par 10
+        if value not in self.divs:
+            self.error_label.setText(f"⚠️ Value must be among {self.divs}")
+            self.error_label.setVisible(True)
+            self.button_box.button(QDialogButtonBox.Ok).setEnabled(False)
+        else:
+            self.error_label.setVisible(False)
+            self.button_box.button(QDialogButtonBox.Ok).setEnabled(True)
+
+    def get_value(self):
+        return self.spin_box.value()
 
 class NewFileDialog(QDialog):
     def __init__(self):
@@ -506,11 +557,11 @@ class MainWindow(QMainWindow):
         opp_menu.addAction(construct_graph)
 
         construct_scia = QAction("Construct SCIA", self)
-        construct_scia.triggered.connect(self.construct_SCIA)
+        construct_scia.triggered.connect(self.manual_construct_SCIA)
         opp_menu.addAction(construct_scia)
 
         construct_scia_observer = QAction("Construct SCIA_observer", self)
-        construct_scia_observer.triggered.connect(self.construct_SCIA_observer)
+        construct_scia_observer.triggered.connect(self.manual_construct_SCIA_observer)
         opp_menu.addAction(construct_scia_observer)
 
 
@@ -535,16 +586,38 @@ class MainWindow(QMainWindow):
                 print("state number",len(list(scg.state_hash_dic.keys())))
                 scg.plot_graph()
 
-    def construct_SCIA(self):
+
+
+    def manual_construct_SCIA(self):
+        current_tab = self.central_widget.currentWidget()
+        if current_tab.tab_type == "TLSPN_edit_tab":
+            TLSPN = current_tab.TLSPN
+            dialog = SCIASpinBoxDialog(TLSPN)
+            if dialog.exec_() == QDialog.Accepted:
+                step_value = dialog.get_value()
+                self.construct_SCIA(step_value)
+
+    def construct_SCIA(self, step_value):
         current_tab = self.central_widget.currentWidget()
         if current_tab.tab_type == "TLSPN_edit_tab":
             TLSPN=current_tab.TLSPN
             if TLSPN != None:
                 scg=SCG(TLSPN)
-                scia=SCIA(scg,1)
+                scia=SCIA(scg, step_value)
                 scia.plot_graph()
 
-    def construct_SCIA_observer(self):
+
+    def manual_construct_SCIA_observer(self):
+        current_tab = self.central_widget.currentWidget()
+        if current_tab.tab_type == "TLSPN_edit_tab":
+            TLSPN = current_tab.TLSPN
+            dialog = SCIASpinBoxDialog(TLSPN)
+            if dialog.exec_() == QDialog.Accepted:
+                step_value = dialog.get_value()
+                self.construct_SCIA_observer(step_value)
+
+
+    def construct_SCIA_observer(self,step_value):
         current_tab = self.central_widget.currentWidget()
 
         if current_tab != None:
@@ -552,7 +625,7 @@ class MainWindow(QMainWindow):
                 TLSPN=current_tab.TLSPN
                 if TLSPN != None:
                     scg=SCG(TLSPN)
-                    scia=SCIA(scg,1)
+                    scia=SCIA(scg,step_value)
                     scia_observer=SCIA_observer(scia)
                     scia_observer.plot_graph()
             return(scia_observer)
@@ -614,5 +687,4 @@ class MainWindow(QMainWindow):
 
     def show_about(self):
         QMessageBox.about(self, "About", "This editor was developed with funding from the ANR project MENACE. \nRef: ANR-22-CE10-0002\n\nAuthor: Yan Monier")
-
 

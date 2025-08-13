@@ -1,0 +1,1500 @@
+{
+    "general_info": {
+        "place_id_num": 31,
+        "transition_id_num": 33,
+        "arc_id_num": 87,
+        "event_id_num": 16,
+        "output_id_num": 30,
+        "model_type": "TLSPN",
+        "view_pos": [
+            -493.0,
+            -376.0
+        ]
+    },
+    "places": {
+        "0": {
+            "id": 0,
+            "name": "P.0",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -1000.0,
+            "pos_y": -300.0
+        },
+        "1": {
+            "id": 1,
+            "name": "P.1",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -760.0,
+            "pos_y": -380.0
+        },
+        "2": {
+            "id": 2,
+            "name": "P.2",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -760.0,
+            "pos_y": -300.0
+        },
+        "3": {
+            "id": 3,
+            "name": "P.3",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -760.0,
+            "pos_y": -220.0
+        },
+        "4": {
+            "id": 4,
+            "name": "P.4",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -540.0,
+            "pos_y": -380.0
+        },
+        "5": {
+            "id": 5,
+            "name": "P.5",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -540.0,
+            "pos_y": -300.0
+        },
+        "6": {
+            "id": 6,
+            "name": "P.6",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -540.0,
+            "pos_y": -220.0
+        },
+        "7": {
+            "id": 7,
+            "name": "P.7",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -320.0,
+            "pos_y": -300.0
+        },
+        "8": {
+            "id": 8,
+            "name": "P.8",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -320.0,
+            "pos_y": -220.0
+        },
+        "10": {
+            "id": 10,
+            "name": "P.10",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -20.0,
+            "pos_y": -300.0
+        },
+        "12": {
+            "id": 12,
+            "name": "P.12",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": 260.0,
+            "pos_y": -300.0
+        },
+        "14": {
+            "id": 14,
+            "name": "P.14",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": 260.0,
+            "pos_y": -100.0
+        },
+        "15": {
+            "id": 15,
+            "name": "P.15",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": 160.0,
+            "pos_y": -40.0
+        },
+        "16": {
+            "id": 16,
+            "name": "P.16",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": 160.0,
+            "pos_y": 60.0
+        },
+        "17": {
+            "id": 17,
+            "name": "P.17",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": 260.0,
+            "pos_y": 120.0
+        },
+        "19": {
+            "id": 19,
+            "name": "P.19",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -40.0,
+            "pos_y": 260.0
+        },
+        "21": {
+            "id": 21,
+            "name": "P.21",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -740.0,
+            "pos_y": -680.0
+        },
+        "22": {
+            "id": 22,
+            "name": "P.22",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -580.0,
+            "pos_y": -680.0
+        },
+        "23": {
+            "id": 23,
+            "name": "P.23",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -800.0,
+            "pos_y": -600.0
+        },
+        "24": {
+            "id": 24,
+            "name": "P.24",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -540.0,
+            "pos_y": -580.0
+        },
+        "25": {
+            "id": 25,
+            "name": "P.25",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -540.0,
+            "pos_y": -640.0
+        },
+        "26": {
+            "id": 26,
+            "name": "P.26",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -320.0,
+            "pos_y": -640.0
+        },
+        "27": {
+            "id": 27,
+            "name": "P.27",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -320.0,
+            "pos_y": -580.0
+        },
+        "28": {
+            "id": 28,
+            "name": "P.28",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -100.0,
+            "pos_y": -600.0
+        },
+        "29": {
+            "id": 29,
+            "name": "P.29",
+            "token_number": 0,
+            "type": "place",
+            "pos_x": -540.0,
+            "pos_y": -480.0
+        },
+        "30": {
+            "id": 30,
+            "name": "P.30",
+            "token_number": 1,
+            "type": "place",
+            "pos_x": -758.6121051576931,
+            "pos_y": -471.5696869899174
+        }
+    },
+    "transitions": {
+        "2": {
+            "id": 2,
+            "name": "T.2",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 5,
+            "output_id": 0,
+            "priority_level": 1,
+            "pos_x": -920.0,
+            "pos_y": -380.0,
+            "orientation": 1
+        },
+        "3": {
+            "id": 3,
+            "name": "T.3",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 6,
+            "output_id": 0,
+            "priority_level": 2,
+            "pos_x": -920.0,
+            "pos_y": -300.0,
+            "orientation": 1
+        },
+        "4": {
+            "id": 4,
+            "name": "T.4",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 7,
+            "output_id": 0,
+            "priority_level": 3,
+            "pos_x": -920.0,
+            "pos_y": -220.0,
+            "orientation": 1
+        },
+        "5": {
+            "id": 5,
+            "name": "T.5",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 3,
+            "output_id": 24,
+            "priority_level": 4,
+            "pos_x": -660.0,
+            "pos_y": -380.0,
+            "orientation": 1
+        },
+        "6": {
+            "id": 6,
+            "name": "T.6",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 3,
+            "output_id": 23,
+            "priority_level": 5,
+            "pos_x": -660.0,
+            "pos_y": -300.0,
+            "orientation": 1
+        },
+        "7": {
+            "id": 7,
+            "name": "T.7",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 3,
+            "output_id": 22,
+            "priority_level": 6,
+            "pos_x": -660.0,
+            "pos_y": -220.0,
+            "orientation": 1
+        },
+        "8": {
+            "id": 8,
+            "name": "T.8",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 8,
+            "output_id": 12,
+            "priority_level": 7,
+            "pos_x": -440.0,
+            "pos_y": -380.0,
+            "orientation": 1
+        },
+        "9": {
+            "id": 9,
+            "name": "T.9",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 8,
+            "output_id": 12,
+            "priority_level": 8,
+            "pos_x": -440.0,
+            "pos_y": -300.0,
+            "orientation": 1
+        },
+        "10": {
+            "id": 10,
+            "name": "T.10",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 8,
+            "output_id": 12,
+            "priority_level": 9,
+            "pos_x": -440.0,
+            "pos_y": -220.0,
+            "orientation": 1
+        },
+        "11": {
+            "id": 11,
+            "name": "T.11",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 8,
+            "output_id": 12,
+            "priority_level": 10,
+            "pos_x": -160.0,
+            "pos_y": -300.0,
+            "orientation": 1
+        },
+        "12": {
+            "id": 12,
+            "name": "T.12",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 8,
+            "output_id": 12,
+            "priority_level": 11,
+            "pos_x": -160.0,
+            "pos_y": -220.0,
+            "orientation": 1
+        },
+        "13": {
+            "id": 13,
+            "name": "T.13",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 1,
+            "output_id": 27,
+            "priority_level": 12,
+            "pos_x": 100.0,
+            "pos_y": -300.0,
+            "orientation": 1
+        },
+        "14": {
+            "id": 14,
+            "name": "T.14",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 15,
+            "output_id": 29,
+            "priority_level": 13,
+            "pos_x": 260.0,
+            "pos_y": -200.0,
+            "orientation": 0
+        },
+        "15": {
+            "id": 15,
+            "name": "T.15",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 2,
+            "output_id": 26,
+            "priority_level": 14,
+            "pos_x": 260.0,
+            "pos_y": 0.0,
+            "orientation": 0
+        },
+        "16": {
+            "id": 16,
+            "name": "T.16",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 10,
+            "output_id": 12,
+            "priority_level": 15,
+            "pos_x": 100.0,
+            "pos_y": 120.0,
+            "orientation": 1
+        },
+        "22": {
+            "id": 22,
+            "name": "T.22",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 10,
+            "output_id": 12,
+            "priority_level": 16,
+            "pos_x": 100.0,
+            "pos_y": 260.0,
+            "orientation": 1
+        },
+        "23": {
+            "id": 23,
+            "name": "T.23",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                2.0
+            ],
+            "event_id": 10,
+            "output_id": 12,
+            "priority_level": 17,
+            "pos_x": -240.0,
+            "pos_y": 260.0,
+            "orientation": 1
+        },
+        "24": {
+            "id": 24,
+            "name": "T.24",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 3,
+            "output_id": 14,
+            "priority_level": 0,
+            "pos_x": -660.0,
+            "pos_y": -600.0,
+            "orientation": 1
+        },
+        "25": {
+            "id": 25,
+            "name": "T.25",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 4,
+            "output_id": 15,
+            "priority_level": 18,
+            "pos_x": -660.0,
+            "pos_y": -740.0,
+            "orientation": 1
+        },
+        "27": {
+            "id": 27,
+            "name": "T.27",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 1,
+            "output_id": 27,
+            "priority_level": 19,
+            "pos_x": -440.0,
+            "pos_y": -640.0,
+            "orientation": 1
+        },
+        "28": {
+            "id": 28,
+            "name": "T.28",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 1,
+            "output_id": 28,
+            "priority_level": 20,
+            "pos_x": -440.0,
+            "pos_y": -580.0,
+            "orientation": 1
+        },
+        "31": {
+            "id": 31,
+            "name": "T.31",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 14,
+            "output_id": 0,
+            "priority_level": 21,
+            "pos_x": -200.0,
+            "pos_y": -600.0,
+            "orientation": 1
+        },
+        "32": {
+            "id": 32,
+            "name": "T.32",
+            "type": "transition",
+            "timing_interval": [
+                0,
+                0
+            ],
+            "event_id": 2,
+            "output_id": 26,
+            "priority_level": 22,
+            "pos_x": -40.0,
+            "pos_y": -600.0,
+            "orientation": 1
+        }
+    },
+    "arcs": {
+        "0": {
+            "id": 0,
+            "source_id": 0,
+            "source_type": "place",
+            "target_id": 2,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "1": {
+            "id": 1,
+            "source_id": 2,
+            "source_type": "transition",
+            "target_id": 1,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "2": {
+            "id": 2,
+            "source_id": 3,
+            "source_type": "transition",
+            "target_id": 2,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "3": {
+            "id": 3,
+            "source_id": 4,
+            "source_type": "transition",
+            "target_id": 3,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "4": {
+            "id": 4,
+            "source_id": 0,
+            "source_type": "place",
+            "target_id": 4,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "5": {
+            "id": 5,
+            "source_id": 0,
+            "source_type": "place",
+            "target_id": 3,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "6": {
+            "id": 6,
+            "source_id": 1,
+            "source_type": "place",
+            "target_id": 5,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "7": {
+            "id": 7,
+            "source_id": 2,
+            "source_type": "place",
+            "target_id": 6,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "8": {
+            "id": 8,
+            "source_id": 3,
+            "source_type": "place",
+            "target_id": 7,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "9": {
+            "id": 9,
+            "source_id": 5,
+            "source_type": "transition",
+            "target_id": 4,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "10": {
+            "id": 10,
+            "source_id": 6,
+            "source_type": "transition",
+            "target_id": 5,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "11": {
+            "id": 11,
+            "source_id": 7,
+            "source_type": "transition",
+            "target_id": 6,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "12": {
+            "id": 12,
+            "source_id": 4,
+            "source_type": "place",
+            "target_id": 8,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "14": {
+            "id": 14,
+            "source_id": 9,
+            "source_type": "transition",
+            "target_id": 7,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "15": {
+            "id": 15,
+            "source_id": 5,
+            "source_type": "place",
+            "target_id": 9,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "16": {
+            "id": 16,
+            "source_id": 6,
+            "source_type": "place",
+            "target_id": 10,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "17": {
+            "id": 17,
+            "source_id": 10,
+            "source_type": "transition",
+            "target_id": 8,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "18": {
+            "id": 18,
+            "source_id": 8,
+            "source_type": "place",
+            "target_id": 12,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "19": {
+            "id": 19,
+            "source_id": 7,
+            "source_type": "place",
+            "target_id": 11,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "20": {
+            "id": 20,
+            "source_id": 11,
+            "source_type": "transition",
+            "target_id": 10,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "22": {
+            "id": 22,
+            "source_id": 8,
+            "source_type": "transition",
+            "target_id": 10,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -20.0,
+                    -380.0
+                ]
+            ]
+        },
+        "23": {
+            "id": 23,
+            "source_id": 12,
+            "source_type": "transition",
+            "target_id": 10,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -20.0,
+                    -220.0
+                ]
+            ]
+        },
+        "24": {
+            "id": 24,
+            "source_id": 10,
+            "source_type": "place",
+            "target_id": 13,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "25": {
+            "id": 25,
+            "source_id": 13,
+            "source_type": "transition",
+            "target_id": 12,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "26": {
+            "id": 26,
+            "source_id": 12,
+            "source_type": "place",
+            "target_id": 14,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "27": {
+            "id": 27,
+            "source_id": 14,
+            "source_type": "transition",
+            "target_id": 14,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "28": {
+            "id": 28,
+            "source_id": 14,
+            "source_type": "place",
+            "target_id": 15,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "29": {
+            "id": 29,
+            "source_id": 12,
+            "source_type": "transition",
+            "target_id": 16,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -60.0,
+                    -200.0
+                ],
+                [
+                    -60.0,
+                    0.0
+                ]
+            ]
+        },
+        "30": {
+            "id": 30,
+            "source_id": 11,
+            "source_type": "transition",
+            "target_id": 16,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    60.0,
+                    -240.0
+                ],
+                [
+                    60.0,
+                    -20.0
+                ]
+            ]
+        },
+        "31": {
+            "id": 31,
+            "source_id": 8,
+            "source_type": "transition",
+            "target_id": 15,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    160.0,
+                    -400.0
+                ]
+            ]
+        },
+        "32": {
+            "id": 32,
+            "source_id": 15,
+            "source_type": "transition",
+            "target_id": 17,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "33": {
+            "id": 33,
+            "source_id": 17,
+            "source_type": "place",
+            "target_id": 16,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "37": {
+            "id": 37,
+            "source_id": 15,
+            "source_type": "place",
+            "target_id": 16,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "38": {
+            "id": 38,
+            "source_id": 17,
+            "source_type": "place",
+            "target_id": 22,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": [
+                [
+                    260.0,
+                    260.0
+                ]
+            ]
+        },
+        "39": {
+            "id": 39,
+            "source_id": 16,
+            "source_type": "place",
+            "target_id": 22,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": [
+                [
+                    160.0,
+                    220.0
+                ]
+            ]
+        },
+        "40": {
+            "id": 40,
+            "source_id": 22,
+            "source_type": "transition",
+            "target_id": 19,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "42": {
+            "id": 42,
+            "source_id": 16,
+            "source_type": "transition",
+            "target_id": 0,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -1000.0,
+                    120.0
+                ]
+            ]
+        },
+        "45": {
+            "id": 45,
+            "source_id": 19,
+            "source_type": "place",
+            "target_id": 23,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "46": {
+            "id": 46,
+            "source_id": 23,
+            "source_type": "transition",
+            "target_id": 0,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    -1040.0,
+                    260.0
+                ],
+                [
+                    -1040.0,
+                    -300.0
+                ]
+            ]
+        },
+        "47": {
+            "id": 47,
+            "source_id": 24,
+            "source_type": "transition",
+            "target_id": 22,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "48": {
+            "id": 48,
+            "source_id": 22,
+            "source_type": "place",
+            "target_id": 25,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "49": {
+            "id": 49,
+            "source_id": 25,
+            "source_type": "transition",
+            "target_id": 21,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "50": {
+            "id": 50,
+            "source_id": 21,
+            "source_type": "place",
+            "target_id": 24,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "51": {
+            "id": 51,
+            "source_id": 2,
+            "source_type": "transition",
+            "target_id": 23,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "52": {
+            "id": 52,
+            "source_id": 3,
+            "source_type": "transition",
+            "target_id": 23,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "53": {
+            "id": 53,
+            "source_id": 4,
+            "source_type": "transition",
+            "target_id": 23,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "62": {
+            "id": 62,
+            "source_id": 23,
+            "source_type": "place",
+            "target_id": 24,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "69": {
+            "id": 69,
+            "source_id": 25,
+            "source_type": "place",
+            "target_id": 27,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "70": {
+            "id": 70,
+            "source_id": 24,
+            "source_type": "place",
+            "target_id": 28,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "71": {
+            "id": 71,
+            "source_id": 27,
+            "source_type": "transition",
+            "target_id": 26,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "72": {
+            "id": 72,
+            "source_id": 28,
+            "source_type": "transition",
+            "target_id": 27,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "73": {
+            "id": 73,
+            "source_id": 26,
+            "source_type": "place",
+            "target_id": 31,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "74": {
+            "id": 74,
+            "source_id": 27,
+            "source_type": "place",
+            "target_id": 31,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "75": {
+            "id": 75,
+            "source_id": 28,
+            "source_type": "place",
+            "target_id": 32,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "76": {
+            "id": 76,
+            "source_id": 31,
+            "source_type": "transition",
+            "target_id": 28,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "77": {
+            "id": 77,
+            "source_id": 29,
+            "source_type": "place",
+            "target_id": 8,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "78": {
+            "id": 78,
+            "source_id": 24,
+            "source_type": "transition",
+            "target_id": 25,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "79": {
+            "id": 79,
+            "source_id": 24,
+            "source_type": "transition",
+            "target_id": 24,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        },
+        "80": {
+            "id": 80,
+            "source_id": 32,
+            "source_type": "transition",
+            "target_id": 29,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": [
+                [
+                    0.0,
+                    -600.0
+                ],
+                [
+                    0.0,
+                    -500.0
+                ]
+            ]
+        },
+        "81": {
+            "id": 81,
+            "source_id": 29,
+            "source_type": "place",
+            "target_id": 9,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "82": {
+            "id": 82,
+            "source_id": 29,
+            "source_type": "place",
+            "target_id": 10,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "83": {
+            "id": 83,
+            "source_id": 30,
+            "source_type": "place",
+            "target_id": 5,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "84": {
+            "id": 84,
+            "source_id": 30,
+            "source_type": "place",
+            "target_id": 6,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "85": {
+            "id": 85,
+            "source_id": 30,
+            "source_type": "place",
+            "target_id": 7,
+            "target_type": "transition",
+            "weight": 1,
+            "control_points": []
+        },
+        "86": {
+            "id": 86,
+            "source_id": 25,
+            "source_type": "transition",
+            "target_id": 30,
+            "target_type": "place",
+            "weight": 1,
+            "control_points": []
+        }
+    },
+    "events": {
+        "0": {
+            "id": 0,
+            "name": "\u03bb",
+            "transition_ids": []
+        },
+        "1": {
+            "id": 1,
+            "name": "set_z_0",
+            "transition_ids": [
+                13,
+                27,
+                28
+            ]
+        },
+        "2": {
+            "id": 2,
+            "name": "set_z_90",
+            "transition_ids": [
+                15,
+                32
+            ]
+        },
+        "3": {
+            "id": 3,
+            "name": "in_convey(up)",
+            "transition_ids": [
+                5,
+                6,
+                7,
+                24
+            ]
+        },
+        "4": {
+            "id": 4,
+            "name": "in_convey(down)",
+            "transition_ids": [
+                25
+            ]
+        },
+        "5": {
+            "id": 5,
+            "name": "metal_input",
+            "transition_ids": [
+                2
+            ]
+        },
+        "6": {
+            "id": 6,
+            "name": "blue_input",
+            "transition_ids": [
+                3
+            ]
+        },
+        "7": {
+            "id": 7,
+            "name": "green_input",
+            "transition_ids": [
+                4
+            ]
+        },
+        "8": {
+            "id": 8,
+            "name": "turn_right(up)",
+            "transition_ids": [
+                8,
+                9,
+                10,
+                11,
+                12
+            ]
+        },
+        "9": {
+            "id": 9,
+            "name": "turn_right_down",
+            "transition_ids": []
+        },
+        "10": {
+            "id": 10,
+            "name": "turn_left(up)",
+            "transition_ids": [
+                16,
+                22,
+                23
+            ]
+        },
+        "11": {
+            "id": 11,
+            "name": "turn_left(down)",
+            "transition_ids": []
+        },
+        "12": {
+            "id": 12,
+            "name": "set_x_800",
+            "transition_ids": []
+        },
+        "13": {
+            "id": 13,
+            "name": "set_x_300",
+            "transition_ids": []
+        },
+        "14": {
+            "id": 14,
+            "name": "grab_on",
+            "transition_ids": [
+                31
+            ]
+        },
+        "15": {
+            "id": 15,
+            "name": "grab_off",
+            "transition_ids": [
+                14
+            ]
+        }
+    },
+    "outputs": {
+        "0": {
+            "id": 0,
+            "name": ".",
+            "transition_ids": [
+                2,
+                3,
+                4,
+                31
+            ]
+        },
+        "12": {
+            "id": 12,
+            "name": "end_rot(up)",
+            "transition_ids": [
+                8,
+                9,
+                10,
+                11,
+                12,
+                16,
+                22,
+                23
+            ]
+        },
+        "13": {
+            "id": 13,
+            "name": "end_rot(down)",
+            "transition_ids": []
+        },
+        "14": {
+            "id": 14,
+            "name": "sensor_in(up)",
+            "transition_ids": [
+                24
+            ]
+        },
+        "15": {
+            "id": 15,
+            "name": "sensor_in(down)",
+            "transition_ids": [
+                25
+            ]
+        },
+        "16": {
+            "id": 16,
+            "name": "sensor_green_start(up)",
+            "transition_ids": []
+        },
+        "17": {
+            "id": 17,
+            "name": "sensor_green_start(down)",
+            "transition_ids": []
+        },
+        "18": {
+            "id": 18,
+            "name": "sensor_blue_start(up)",
+            "transition_ids": []
+        },
+        "19": {
+            "id": 19,
+            "name": "sensor_blue_start(down)",
+            "transition_ids": []
+        },
+        "20": {
+            "id": 20,
+            "name": "sensor_metal_start(up)",
+            "transition_ids": []
+        },
+        "21": {
+            "id": 21,
+            "name": "sensor_metal_start(down)",
+            "transition_ids": []
+        },
+        "22": {
+            "id": 22,
+            "name": "sensor_camera_green",
+            "transition_ids": [
+                7
+            ]
+        },
+        "23": {
+            "id": 23,
+            "name": "sensor_camera_blue",
+            "transition_ids": [
+                6
+            ]
+        },
+        "24": {
+            "id": 24,
+            "name": "sensor_camera_metal",
+            "transition_ids": [
+                5
+            ]
+        },
+        "25": {
+            "id": 25,
+            "name": "sensor_camera_empty",
+            "transition_ids": []
+        },
+        "26": {
+            "id": 26,
+            "name": "z_is_90(up)",
+            "transition_ids": [
+                15,
+                32
+            ]
+        },
+        "27": {
+            "id": 27,
+            "name": "z_is_0(up)",
+            "transition_ids": [
+                13,
+                27
+            ]
+        },
+        "28": {
+            "id": 28,
+            "name": "is_grab(up)",
+            "transition_ids": [
+                28
+            ]
+        },
+        "29": {
+            "id": 29,
+            "name": "is_grab(down)",
+            "transition_ids": [
+                14
+            ]
+        }
+    },
+    "marking": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "10": 0,
+        "12": 0,
+        "14": 0,
+        "15": 0,
+        "16": 0,
+        "17": 0,
+        "19": 0,
+        "21": 1,
+        "22": 0,
+        "23": 0,
+        "24": 0,
+        "25": 0,
+        "26": 0,
+        "27": 0,
+        "28": 0,
+        "29": 0,
+        "30": 0
+    },
+    "file_type": "TLSPN_edit_tab"
+}

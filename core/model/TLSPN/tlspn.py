@@ -8,6 +8,7 @@ from .transition import Transition
 from .arc import Arc
 from .event import Event
 from .output import Output
+from math import gcd
 
 class TLSPN:
     def __init__(self):
@@ -538,6 +539,22 @@ class TLSPN:
         return( unobservable_event)
 
 
+    def give_common_denominator(self):
+        number_list=[]
+        for transition in self.transitions.values():
+            a=transition.timing_interval[0]
+            b = transition.timing_interval[1]
+            number_list.append(int(a*1000))
+            number_list.append(int(b*1000))
 
+        pgcd = number_list[0]
+        for v in number_list[1:]:
+            pgcd = gcd(pgcd, v)
+
+        divs = []
+        for i in range(1, pgcd + 1):
+            if pgcd % i == 0:
+                divs.append(i)
+        return(pgcd,divs)
 
 

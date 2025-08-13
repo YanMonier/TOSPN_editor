@@ -1,22 +1,27 @@
 import sys
 from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QAction, QMessageBox, QToolBar, QGraphicsView, \
-	QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow, QGroupBox, QFileDialog
-from PySide2.QtCore import QRectF, Qt, QPointF
+	QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsItem, QMainWindow, QGroupBox, QFileDialog,  QDialog, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QApplication, QAbstractItemView, QMenu, QAction, QHeaderView, QLineEdit, QMessageBox, QFormLayout
+from PySide2.QtCore import QRectF, Qt, QPointF, QPoint, QMimeData, Qt, QMimeData, QByteArray, QDataStream, QIODevice, QPoint
 from PySide2.QtGui import QIcon
-from PySide2.QtGui import QBrush, QColor, QPen
+from PySide2.QtGui import QBrush, QColor, QPen, QDrag, QCursor
 from PySide2.QtCore import QSize
 
 from PySide2.QtWidgets import (QSizePolicy, QComboBox, QFrame, QListWidgetItem, QVBoxLayout, QWidget, QLineEdit,
 							   QSpinBox, QPushButton, QColorDialog, QSplitter, QLabel, QHBoxLayout, QDoubleSpinBox,
-							   QDialog, QListWidget, QDialogButtonBox, QSpacerItem, QScrollArea, QMessageBox)
+							   QDialog, QListWidget, QDialogButtonBox, QSpacerItem, QScrollArea, QMessageBox, QTableWidget,QAbstractItemView,QTableWidgetItem, QMenu,QInputDialog)
 from PySide2.QtCore import Qt, Signal, QTime, QTimer
 from gui.graphics.graphics_TLSPN import GraphPlaceItemTLSPN, GraphTransitionItemTLSPN, GraphArcItemTLSPN, \
 	TempGraphLineTLSPN
 
 from utils.other_utils import OutputParser
+from core.model.SIGNAL_AND_EVENT.event_abstraction import EventAbstraction_manager,EventAbstraction
+from core.model.SIGNAL_AND_EVENT.signal import Signal,Signal_manager
+from core.model.SIGNAL_AND_EVENT.dialog_windows import SignalInputDialog,SignalEditorDialog,RuleEditorDialog
+
 import math
 import os
 import json
+from functools import partial
 
 def display_error(event,time):
     msg = QMessageBox()
@@ -24,6 +29,7 @@ def display_error(event,time):
     msg.setWindowTitle("Erreur")
     msg.setText(f"Attack detected at time {time} with event {event}")
     msg.exec_()
+
 
 
 class SCIASpinBoxDialog(QDialog):
@@ -77,7 +83,7 @@ class SCIASpinBoxDialog(QDialog):
 		return self.spin_box.value()
 
 
-class AttackDetectionPropertyEditorTLSPN(QWidget):
+class OnlineAttackDetectionPropertyEditorTLSPN(QWidget):
 	def __init__(self, MainWindow):
 		"""Initialize the output property editor."""
 		super().__init__()
@@ -85,6 +91,11 @@ class AttackDetectionPropertyEditorTLSPN(QWidget):
 		self.MainWindow=MainWindow
 		self.setFixedWidth(300)
 		self.widget_list = []
+
+		self.signal_manager=Signal_manager()
+		self.event_abstraction_manager=EventAbstraction_manager(self.signal_manager)
+		self.rules={}
+		self.signals=[]
 
 		self.timed_label_sequence = [] # Contiendra les événements
 		self.event_sequence=[]
@@ -105,15 +116,40 @@ class AttackDetectionPropertyEditorTLSPN(QWidget):
 
 		self.step_label=QLabel("")
 
+
+		self.edit_signals_button = QPushButton("Edit signals")
+		self.edit_events_button = QPushButton("Edit events")
+
+		self.edit_signals_button.clicked.connect(self.edit_signals)
+		self.edit_events_button.clicked.connect(self.edit_events)
+
 		# Bouton associé
 		self.load_sequence_button = QPushButton("Load timed_event sequence")
 		self.load_sequence_button.clicked.connect(self.load_event_sequence)
 
+		self.save_mapping_button = QPushButton("Save signal configuration")
+		self.save_mapping_button.clicked.connect(self.save_mapping)
+
+		self.load_mapping_button = QPushButton("Load signal configuration")
+		self.load_mapping_button.clicked.connect(self.load_mapping)
 		# Layout horizontal pour placer les deux côte à côte
+
+		hbox1=QHBoxLayout()
+		hbox1.addWidget(self.save_mapping_button)
+		hbox1.addWidget(self.load_mapping_button)
+		self.layout.addLayout(hbox1)
+
+		hbox2 = QHBoxLayout()
+		hbox2.addWidget(self.edit_signals_button)
+		hbox2.addWidget(self.edit_events_button)
+		self.layout.addLayout(hbox2)
+
+
 		hbox = QHBoxLayout()
 		hbox.addWidget(self.load_sequence_button)
 		hbox.addWidget(self.change_step_button)
 		hbox.addWidget(self.step_label)
+
 
 
 
@@ -141,6 +177,74 @@ class AttackDetectionPropertyEditorTLSPN(QWidget):
 		self.SCIA_observer=None
 		self.set_button_state(False)
 
+	def save_mapping(self):
+		save_dic={}
+		signal_mapping_dic=self.signal_manager.save_signals()
+		event_mapping_dic=self.event_abstraction_manager.save_event()
+
+		save_dic["signal_mapping"]=signal_mapping_dic
+		save_dic["event_mapping"]=event_mapping_dic
+		# Open a file dialog to select save location
+
+		directory = "mapping_saves"
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+		file_path, _ = QFileDialog.getSaveFileName(
+			self,
+			"Save File",  # Dialog title
+			directory,  # Initial directory ("" for current directory)
+			"JSON Files (*.json);;All Files (*)"  # File type filters
+		)
+		if file_path:  # Check if the user selected a file
+			with open(file_path, 'w') as json_file:
+				json.dump(save_dic, json_file, indent=4)
+			print(f"File saved to: {file_path}")
+			QMessageBox.information(self, "Save File", "Save the current file!")
+			return ("saved")
+
+		return ("canceled")
+
+	def load_mapping(self):
+
+		# Open a file dialog to select save location
+		directory = "mapping_saves"
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+
+		file_path, _ = QFileDialog.getOpenFileName(
+			self,
+			"Open File",  # Dialog title
+			directory,  # Initial directory ("" for current directory)
+			"JSON Files (*.json);;All Files (*)"  # File type filters
+		)
+		if file_path:  # Check if the user selected a file
+			file_type = None
+			with open(file_path, 'r') as json_file:
+				save_dic = json.load(json_file)
+				#file_type = save_dic["file_type"]
+				signal_mapping_dic = save_dic["signal_mapping"]
+				event_mapping_dic = save_dic["event_mapping"]
+				self.event_abstraction_manager.load_event(event_mapping_dic)
+				self.signal_manager.load_signals(signal_mapping_dic)
+				print(f"File loaded from: {file_path}")
+				QMessageBox.information(self, "Load File", "The file has been successfully loaded !")
+
+			print("debug: try open")
+
+	def edit_signals(self):
+		dlg = SignalEditorDialog(self.signal_manager)
+		if dlg.exec_() == QDialog.Accepted:
+			self.signals = dlg.get_data()
+
+	def init_rules(self):
+		for event_id in self.TLSPN.events.keys():
+			if event_id not in self.rules.keys() and self.TLSPN.events[event_id].name != "λ":
+				self.rules[event_id]={"event_id":event_id,"condition":"","rule_id":0}
+
+	def edit_events(self):
+		dlg = RuleEditorDialog(self.event_abstraction_manager,self.signal_manager)
+		if dlg.exec_() == QDialog.Accepted:
+			self.rules = dlg.get_data()
 
 	def set_SCIA_observer(self):
 		dialog = SCIASpinBoxDialog(self.TLSPN)
@@ -165,6 +269,7 @@ class AttackDetectionPropertyEditorTLSPN(QWidget):
 	def set_TLSPN(self, TLSPN):
 		"""Set the TLSPN model reference."""
 		self.TLSPN = TLSPN
+		self.event_abstraction_manager.reset_TLSPN(self.TLSPN)
 		try:
 			self.pgcd, self.divs = self.TLSPN.give_common_denominator()
 			self.step_value=self.pgcd
@@ -181,6 +286,7 @@ class AttackDetectionPropertyEditorTLSPN(QWidget):
 	def reset_self(self):
 		"""Reset the entire editor."""
 		self.TLSPN = None
+		self.event_abstraction_manager.reset_TLSPN(self.TLSPN)
 		self.is_step_set=False
 		self.set_button_state(False)
 

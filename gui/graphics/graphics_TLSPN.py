@@ -89,6 +89,8 @@ class GraphManagerTLSPN():
 				if arc_graph_item.node2 in self.arc_history[arc_graph_item.node1]:
 					del self.arc_history[arc_graph_item.node1][arc_graph_item.node2]
 
+			tlspn_arc=arc_graph_item.arc
+			self.TLSPN.remove_arc(tlspn_arc)
 			del self.arc_to_graph_arc[arc]
 
 	def remove_place(self, place):

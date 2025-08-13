@@ -40,15 +40,15 @@ class SCIA():
 				if selected_scia_state_id==2:
 					print(f"DEBUG USIGMA test {max_scg_state_time}")
 				if selected_scia_state.time_interval[1]<max_scg_state_time:
-					new_id = self.add_state(SCG_state_id, [selected_scia_state.time_interval[1], selected_scia_state.time_interval[1]+self.dt], "open")
+					new_id = self.add_state(SCG_state_id, [round(selected_scia_state.time_interval[1],3), round(selected_scia_state.time_interval[1] + self.dt/1000,3)], "open")
 					self.new_X.add(new_id)
 					self.add_transition(selected_scia_state_id,"e",new_id)
 
 
 			elif selected_scia_state.time_interval_type=="open":
 				if max_scg_state_time!=INF:
-					new_id = self.add_state(SCG_state_id, [ selected_scia_state.time_interval[0] + self.dt,
-														   selected_scia_state.time_interval[0] + self.dt], "close")
+					new_id = self.add_state(SCG_state_id, [ round(selected_scia_state.time_interval[0] + self.dt/1000,3),
+														   round(selected_scia_state.time_interval[0] + self.dt/1000,3)], "close")
 					self.new_X.add(new_id)
 					self.add_transition(selected_scia_state_id, "r-e", new_id)
 				else:
@@ -123,58 +123,60 @@ class SCIA():
 			self.new_X.remove(selected_scia_state_id)
 
 	def plot_graph(self):
+		print("start_test_plot_SCIA")
+		if len(list(self.states.keys()))<=500:
+			print("start_plot_SCIA")
+			dot = Digraph(name='{}'.format("HA"), filename='{}.gv'.format("HA"), comment='HA graph', engine="dot")
 
-		dot = Digraph(name='{}'.format("HA"), filename='{}.gv'.format("HA"), comment='HA graph', engine="dot")
+			round_val = 3
+			# dot.graph_attr['layout'] = "neato"
+			# dot.graph_attr['mode'] = "isep"
+			# dot.graph_attr['nodesep'] = "0.5"
+			# dot.graph_attr['splines'] = "false"
+			# dot.graph_attr['overlap'] = "false"
+			# dot.graph_attr['sep'] = "2"
+			# dot.attr(size='10,10')  # Size of the output graph
+			# dot.attr(dpi='300')  # Resolution
+			# dot.attr(splines='true')  # Use splines to avoid overlapping edges
 
-		round_val = 3
-		# dot.graph_attr['layout'] = "neato"
-		# dot.graph_attr['mode'] = "isep"
-		# dot.graph_attr['nodesep'] = "0.5"
-		# dot.graph_attr['splines'] = "false"
-		# dot.graph_attr['overlap'] = "false"
-		# dot.graph_attr['sep'] = "2"
-		# dot.attr(size='10,10')  # Size of the output graph
-		# dot.attr(dpi='300')  # Resolution
-		# dot.attr(splines='true')  # Use splines to avoid overlapping edges
+			dot.attr(overlap='false')  # Avoid node overlap
+			dot.attr(pack='true')  # Pack the layout
+			dot.attr(sep='0.5')  # Increase the separation between nodes
+			dot.attr(rankdir='BT')  # Top to Bottom layout (change to 'LR' for Left to Right)
 
-		dot.attr(overlap='false')  # Avoid node overlap
-		dot.attr(pack='true')  # Pack the layout
-		dot.attr(sep='0.5')  # Increase the separation between nodes
-		dot.attr(rankdir='BT')  # Top to Bottom layout (change to 'LR' for Left to Right)
+			for state_id in self.states.keys():
+				state = self.states[state_id]
 
-		for state_id in self.states.keys():
-			state = self.states[state_id]
+				txt = '<<TABLE BORDER="0" CELLBORDER="0">'
+				txt += '<TR><TD>X{}</TD></TR>'.format(state_id)
 
-			txt = '<<TABLE BORDER="0" CELLBORDER="0">'
-			txt += '<TR><TD>X{}</TD></TR>'.format(state_id)
-
-			txt += '<TR><TD>C{}</TD></TR> '.format(state.SCG_state)
+				txt += '<TR><TD>C{}</TD></TR> '.format(state.SCG_state)
 
 
-			if state.time_interval_type=="open":
-				txt += '<TR><TD>({},{})</TD></TR>'.format(state.time_interval[0],state.time_interval[1])
-			else:
-				txt += '<TR><TD>[{},{}]</TD></TR>'.format(state.time_interval[0],state.time_interval[1])
-			# txt += '<TR><TD>{}</TD></TR>'.format(state.dist_dic)
-			# txt += '<TR><TD>{}</TD></TR>'.format(state.debug_time_constraints)
-			txt += '</TABLE>>'
+				if state.time_interval_type=="open":
+					txt += '<TR><TD>({},{})</TD></TR>'.format(state.time_interval[0],state.time_interval[1])
+				else:
+					txt += '<TR><TD>[{},{}]</TD></TR>'.format(state.time_interval[0],state.time_interval[1])
+				# txt += '<TR><TD>{}</TD></TR>'.format(state.dist_dic)
+				# txt += '<TR><TD>{}</TD></TR>'.format(state.debug_time_constraints)
+				txt += '</TABLE>>'
 
-			# dot.node("{}".format(location_id),label=txt, shape='box', style='rounded')
-			# dot.node("{}".format(location_id), label=txt, shape='box', style='rounded', width='3', height='2')
-			dot.node("{}".format(state_id), label=txt, shape="box", fontsize="12",
-					 fontcolor="black", width="0.75", height="0.5", fixedsize="false")
+				# dot.node("{}".format(location_id),label=txt, shape='box', style='rounded')
+				# dot.node("{}".format(location_id), label=txt, shape='box', style='rounded', width='3', height='2')
+				dot.node("{}".format(state_id), label=txt, shape="box", fontsize="12",
+						 fontcolor="black", width="0.75", height="0.5", fixedsize="false")
 
-		for edge in self.transition.values():
-			source_id = edge.state1_id
-			target_id = edge.state2_id
+			for edge in self.transition.values():
+				source_id = edge.state1_id
+				target_id = edge.state2_id
 
-			txt = '<<TABLE BORDER="0" CELLBORDER="0">'
-			txt += '<TR><TD> {} </TD></TR>'.format(edge.label)
-			txt += '</TABLE>>'
-			dot.edge("{}".format(source_id), "{}".format(target_id), label="{}".format(txt))
+				txt = '<<TABLE BORDER="0" CELLBORDER="0">'
+				txt += '<TR><TD> {} </TD></TR>'.format(edge.label)
+				txt += '</TABLE>>'
+				dot.edge("{}".format(source_id), "{}".format(target_id), label="{}".format(txt))
 
-		dot.format = 'pdf'
-		dot.render("sciagraph_plot", view="True")
+			dot.format = 'pdf'
+			dot.render("sciagraph_plot", view="True")
 
 
 
